@@ -5,11 +5,11 @@ import React, { useState, useMemo, useCallback, useEffect, useRef } from "react"
 // ============================================================
 // Replace this URL with your deployed Google Apps Script URL
 // See RentalsBackend_GoogleAppsScript.js for setup instructions
-const SHEETS_API_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
+const SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbz_cC3rVBDL6Ie2wAAe3Vj1l8jyG7R-u0-yAjUmDq-OFuHCduLQUmGf8p-fRxXSB-sL/exec";
 
 async function fetchAdsData() {
   try {
-    if (SHEETS_API_URL === "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE") return null;
+    if (SHEETS_API_URL === "https://script.google.com/macros/s/AKfycbz_cC3rVBDL6Ie2wAAe3Vj1l8jyG7R-u0-yAjUmDq-OFuHCduLQUmGf8p-fRxXSB-sL/exec") return null;
     const res = await fetch(SHEETS_API_URL);
     const data = await res.json();
     if (data.success) return { banners: data.banners, promoted: data.promoted };
