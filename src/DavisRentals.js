@@ -1,6 +1,37 @@
 import React, { useState, useMemo, useCallback, useEffect, useRef } from "react";
 
 // ============================================================
+// GOOGLE SHEETS BACKEND
+// ============================================================
+// Replace this URL with your deployed Google Apps Script URL
+// See RentalsBackend_GoogleAppsScript.js for setup instructions
+const SHEETS_API_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
+
+async function fetchAdsData() {
+  try {
+    if (SHEETS_API_URL === "https://script.google.com/macros/s/AKfycbz_cC3rVBDL6Ie2wAAe3Vj1l8jyG7R-u0-yAjUmDq-OFuHCduLQUmGf8p-fRxXSB-sL/exec") return null;
+    const res = await fetch(SHEETS_API_URL);
+    const data = await res.json();
+    if (data.success) return { banners: data.banners, promoted: data.promoted };
+  } catch (e) { console.error("Failed to fetch ads:", e); }
+  return null;
+}
+
+async function saveAdsData(banners, promoted) {
+  try {
+    if (SHEETS_API_URL === "https://script.google.com/macros/s/AKfycbz_cC3rVBDL6Ie2wAAe3Vj1l8jyG7R-u0-yAjUmDq-OFuHCduLQUmGf8p-fRxXSB-sL/exec") return false;
+    const res = await fetch(SHEETS_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify({ banners, promoted }),
+    });
+    const data = await res.json();
+    return data.success;
+  } catch (e) { console.error("Failed to save ads:", e); }
+  return false;
+}
+
+// ============================================================
 // WALK SCORE REFERENCE POINTS
 // ============================================================
 // 420 Hutchison Dr, Davis, CA 95616 = UC Davis Memorial Union (campus center)
@@ -281,10 +312,22 @@ export default function DavisRentals() {
   const [bannerIdx, setBannerIdx] = useState(0);
   const [editBannerIdx, setEditBannerIdx] = useState(null);
   const [editBannerForm, setEditBannerForm] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState(null);
 
   const modalRef = useRef(null);
   const t = isDark ? THEMES.dark : THEMES.light;
 
+  // Fetch from Google Sheets on load (overrides localStorage defaults)
+  useEffect(() => {
+    fetchAdsData().then(data => {
+      if (!data) return;
+      if (data.banners && data.banners.length > 0) setBanners(data.banners);
+      if (data.promoted && data.promoted.length > 0) setPromoted(data.promoted);
+    });
+  }, []);
+
+  // Save to localStorage as local cache
   useEffect(() => {
     try { window.localStorage?.setItem?.("mdc-promoted", JSON.stringify(promoted)); } catch(e) {}
   }, [promoted]);
@@ -303,6 +346,15 @@ export default function DavisRentals() {
   useEffect(() => {
     try { window.localStorage?.setItem?.("mdc-theme", isDark ? "dark" : "light"); } catch(e) {}
   }, [isDark]);
+
+  // Publish to Google Sheets backend
+  const publishToBackend = useCallback(async (newBanners, newPromoted) => {
+    setSaving(true);
+    const success = await saveAdsData(newBanners || banners, newPromoted || promoted);
+    setSaving(false);
+    if (success) setLastSaved(new Date());
+    return success;
+  }, [banners, promoted]);
 
   const allAmenities = useMemo(() => {
     const set = new Set();
@@ -367,6 +419,7 @@ export default function DavisRentals() {
     setPromoted(updated);
     setEditIdx(null);
     setEditForm(null);
+    publishToBackend(banners, updated);
   };
   const addNew = () => {
     const blank = { name: "", tagline: "", promo: "", address: "", beds: "", rent: "", highlights: [""], link: "", cta: "Learn More", color: "#6366f1" };
@@ -375,10 +428,16 @@ export default function DavisRentals() {
     setEditForm({ ...blank, highlights: [""] });
   };
   const removePromo = (idx) => {
-    setPromoted(promoted.filter((_, i) => i !== idx));
+    const updated = promoted.filter((_, i) => i !== idx);
+    setPromoted(updated);
     if (editIdx === idx) cancelEdit();
+    publishToBackend(banners, updated);
   };
-  const resetDefaults = () => { setPromoted(DEFAULT_PROMOTED); cancelEdit(); };
+  const resetDefaults = () => {
+    setPromoted(DEFAULT_PROMOTED);
+    cancelEdit();
+    publishToBackend(banners, DEFAULT_PROMOTED);
+  };
   const updateField = (field, value) => setEditForm(prev => ({ ...prev, [field]: value }));
 
   // Banner admin helpers
@@ -391,6 +450,7 @@ export default function DavisRentals() {
     setBanners(updated);
     setEditBannerIdx(null);
     setEditBannerForm(null);
+    publishToBackend(updated, promoted);
   };
   const addBanner = () => {
     if (banners.length >= 3) return;
@@ -400,11 +460,18 @@ export default function DavisRentals() {
     setEditBannerForm({ ...blank });
   };
   const removeBanner = (idx) => {
-    setBanners(banners.filter((_, i) => i !== idx));
+    const updated = banners.filter((_, i) => i !== idx);
+    setBanners(updated);
     if (editBannerIdx === idx) cancelBannerEdit();
     if (bannerIdx >= banners.length - 1) setBannerIdx(0);
+    publishToBackend(updated, promoted);
   };
-  const resetBanners = () => { setBanners(DEFAULT_BANNERS); cancelBannerEdit(); setBannerIdx(0); };
+  const resetBanners = () => {
+    setBanners(DEFAULT_BANNERS);
+    cancelBannerEdit();
+    setBannerIdx(0);
+    publishToBackend(DEFAULT_BANNERS, promoted);
+  };
   const updateHighlight = (i, val) => {
     const h = [...editForm.highlights];
     h[i] = val;
@@ -795,8 +862,8 @@ export default function DavisRentals() {
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <span style={{ fontSize: 20 }}>{"\u2699\uFE0F"}</span>
                 <div>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: t.textStrong, fontFamily: "'DM Serif Display', serif" }}>Promoted Listings Admin</div>
-                  <div style={{ fontSize: 12, color: t.textMuted }}>Manage featured apartment placements</div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: t.textStrong, fontFamily: "'DM Serif Display', serif" }}>Ad Manager</div>
+                  <div style={{ fontSize: 12, color: t.textMuted }}>Manage banners & featured listings {saving ? <span style={{ color: t.accent }}>{"\u2022"} Saving...</span> : lastSaved ? <span style={{ color: "#10b981" }}>{"\u2713"} Synced</span> : SHEETS_API_URL === "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE" ? <span style={{ color: "#f59e0b" }}>{"\u26A0"} Local only — connect Google Sheets for cross-device sync</span> : null}</div>
                 </div>
               </div>
               <button onClick={() => setShowAdmin(false)} style={{ width: 32, height: 32, borderRadius: 8, border: `1px solid ${t.border}`, background: "transparent", color: t.textMuted, fontSize: 16, cursor: "pointer" }}>{"\u2715"}</button>
