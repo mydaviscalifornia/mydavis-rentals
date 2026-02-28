@@ -229,6 +229,12 @@ const COLOR_OPTIONS = [
   { label: "Orange", value: "#f97316" },
 ];
 
+const DEFAULT_BANNERS = [
+  { imageUrl: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=1200&h=400&fit=crop", link: "https://mydaviscalifornia.com", alt: "Davis Apartments" },
+  { imageUrl: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=1200&h=400&fit=crop", link: "https://mydaviscalifornia.com", alt: "Modern Living" },
+  { imageUrl: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1200&h=400&fit=crop", link: "https://mydaviscalifornia.com", alt: "Your New Home" },
+];
+
 // ============================================================
 // COMPONENT
 // ============================================================
@@ -264,12 +270,35 @@ export default function DavisRentals() {
     return DEFAULT_PROMOTED;
   });
 
+  // Banner state
+  const [banners, setBanners] = useState(() => {
+    try {
+      const saved = window.localStorage?.getItem?.("mdc-banners");
+      if (saved) return JSON.parse(saved);
+    } catch(e) {}
+    return DEFAULT_BANNERS;
+  });
+  const [bannerIdx, setBannerIdx] = useState(0);
+  const [editBannerIdx, setEditBannerIdx] = useState(null);
+  const [editBannerForm, setEditBannerForm] = useState(null);
+
   const modalRef = useRef(null);
   const t = isDark ? THEMES.dark : THEMES.light;
 
   useEffect(() => {
     try { window.localStorage?.setItem?.("mdc-promoted", JSON.stringify(promoted)); } catch(e) {}
   }, [promoted]);
+
+  useEffect(() => {
+    try { window.localStorage?.setItem?.("mdc-banners", JSON.stringify(banners)); } catch(e) {}
+  }, [banners]);
+
+  // Banner auto-rotation every 5 seconds
+  useEffect(() => {
+    if (banners.length <= 1) return;
+    const timer = setInterval(() => setBannerIdx(prev => (prev + 1) % banners.length), 5000);
+    return () => clearInterval(timer);
+  }, [banners.length]);
 
   useEffect(() => {
     try { window.localStorage?.setItem?.("mdc-theme", isDark ? "dark" : "light"); } catch(e) {}
@@ -351,6 +380,31 @@ export default function DavisRentals() {
   };
   const resetDefaults = () => { setPromoted(DEFAULT_PROMOTED); cancelEdit(); };
   const updateField = (field, value) => setEditForm(prev => ({ ...prev, [field]: value }));
+
+  // Banner admin helpers
+  const startBannerEdit = (idx) => { setEditBannerIdx(idx); setEditBannerForm({ ...banners[idx] }); };
+  const cancelBannerEdit = () => { setEditBannerIdx(null); setEditBannerForm(null); };
+  const saveBannerEdit = () => {
+    if (!editBannerForm.imageUrl) return;
+    const updated = [...banners];
+    updated[editBannerIdx] = { ...editBannerForm };
+    setBanners(updated);
+    setEditBannerIdx(null);
+    setEditBannerForm(null);
+  };
+  const addBanner = () => {
+    if (banners.length >= 3) return;
+    const blank = { imageUrl: "", link: "", alt: "" };
+    setBanners([...banners, blank]);
+    setEditBannerIdx(banners.length);
+    setEditBannerForm({ ...blank });
+  };
+  const removeBanner = (idx) => {
+    setBanners(banners.filter((_, i) => i !== idx));
+    if (editBannerIdx === idx) cancelBannerEdit();
+    if (bannerIdx >= banners.length - 1) setBannerIdx(0);
+  };
+  const resetBanners = () => { setBanners(DEFAULT_BANNERS); cancelBannerEdit(); setBannerIdx(0); };
   const updateHighlight = (i, val) => {
     const h = [...editForm.highlights];
     h[i] = val;
@@ -434,6 +488,37 @@ export default function DavisRentals() {
           <div style={{ fontSize: 11, fontWeight: 700, color: t.badgeText, textTransform: "uppercase", letterSpacing: 2 }}>Featured Communities</div>
           <div style={{ padding: "2px 8px", borderRadius: 4, background: t.badgeBg, border: `1px solid ${t.badgeBorder}`, fontSize: 9, fontWeight: 700, color: t.badgeText, textTransform: "uppercase", letterSpacing: 1 }}>Sponsored</div>
         </div>
+
+        {/* Rotating Banner */}
+        {banners.length > 0 && banners[bannerIdx % banners.length]?.imageUrl && (
+          <div style={{ marginBottom: 16, position: "relative" }}>
+            <a href={banners[bannerIdx % banners.length].link || "#"} target="_blank" rel="noopener noreferrer" style={{ display: "block", textDecoration: "none" }}>
+              <div style={{
+                width: "100%", height: 200, borderRadius: 16, overflow: "hidden", position: "relative",
+                border: `1px solid ${t.border}`, cursor: "pointer", transition: "box-shadow 0.2s",
+              }}
+                onMouseEnter={e => e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,0,0,0.2)"}
+                onMouseLeave={e => e.currentTarget.style.boxShadow = "none"}
+              >
+                <img src={banners[bannerIdx % banners.length].imageUrl} alt={banners[bannerIdx % banners.length].alt || "Featured"}
+                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transition: "opacity 0.5s ease" }} />
+              </div>
+            </a>
+            {/* Dot indicators */}
+            {banners.length > 1 && (
+              <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 10 }}>
+                {banners.map((_, i) => (
+                  <button key={i} onClick={() => setBannerIdx(i)} style={{
+                    width: i === bannerIdx % banners.length ? 24 : 8, height: 8, borderRadius: 4, border: "none",
+                    background: i === bannerIdx % banners.length ? t.accent : t.border,
+                    cursor: "pointer", transition: "all 0.3s ease", padding: 0,
+                  }} />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 16 }}>
           {promoted.map((p, i) => (
             <div key={i} style={{
@@ -731,6 +816,96 @@ export default function DavisRentals() {
               </div>
             ) : (
               <div style={{ padding: 24 }}>
+                {/* BANNER EDITOR */}
+                <div style={{ marginBottom: 28 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ fontSize: 16 }}>{"\uD83D\uDDBC\uFE0F"}</span>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: t.text }}>Banner Images</div>
+                      <div style={{ fontSize: 11, color: t.textMuted }}>(up to 3, rotates every 5s)</div>
+                    </div>
+                    <div style={{ display: "flex", gap: 6 }}>
+                      {banners.length < 3 && (
+                        <button onClick={addBanner} style={{ padding: "6px 12px", borderRadius: 8, border: `1px solid ${t.accent}40`, background: `${t.accent}10`, color: t.accent, fontWeight: 600, fontSize: 12, cursor: "pointer" }}>{"\u002B"} Add</button>
+                      )}
+                      <button onClick={resetBanners} style={{ padding: "6px 12px", borderRadius: 8, border: `1px solid ${t.border}`, background: t.bgInput, color: t.textMuted, fontWeight: 600, fontSize: 12, cursor: "pointer" }}>{"\u21BA"} Reset</button>
+                    </div>
+                  </div>
+
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    {banners.map((b, idx) => (
+                      <div key={idx} style={{ borderRadius: 12, border: `1px solid ${editBannerIdx === idx ? t.accent : t.border}`, background: editBannerIdx === idx ? `${t.accent}05` : t.bgInput, overflow: "hidden", transition: "all 0.2s" }}>
+                        <div style={{ padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: 12, fontWeight: 700, color: t.accent, fontFamily: "'JetBrains Mono', monospace" }}>#{idx + 1}</div>
+                            {b.imageUrl ? (
+                              <div style={{ width: 60, height: 34, borderRadius: 6, overflow: "hidden", flexShrink: 0, border: `1px solid ${t.border}` }}>
+                                <img src={b.imageUrl} alt={b.alt || ""} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                              </div>
+                            ) : (
+                              <div style={{ width: 60, height: 34, borderRadius: 6, background: t.bgInput, border: `1px dashed ${t.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, color: t.textFaint }}>empty</div>
+                            )}
+                            <div style={{ fontSize: 12, color: t.textMuted, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{b.imageUrl || "No image URL set"}</div>
+                          </div>
+                          <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+                            {editBannerIdx !== idx ? (
+                              <button onClick={() => startBannerEdit(idx)} style={{ padding: "5px 12px", borderRadius: 6, border: `1px solid ${t.border}`, background: t.bgInput, color: t.text, fontSize: 11, fontWeight: 600, cursor: "pointer" }}>{"\u270F\uFE0F"} Edit</button>
+                            ) : (
+                              <>
+                                <button onClick={saveBannerEdit} style={{ padding: "5px 12px", borderRadius: 6, border: "none", background: t.accent, color: "#fff", fontSize: 11, fontWeight: 600, cursor: "pointer" }}>{"\u2714"} Save</button>
+                                <button onClick={cancelBannerEdit} style={{ padding: "5px 12px", borderRadius: 6, border: `1px solid ${t.border}`, background: t.bgInput, color: t.textMuted, fontSize: 11, fontWeight: 600, cursor: "pointer" }}>Cancel</button>
+                              </>
+                            )}
+                            <button onClick={() => removeBanner(idx)} style={{ padding: "5px 8px", borderRadius: 6, border: `1px solid rgba(255,61,0,0.2)`, background: "rgba(255,61,0,0.05)", color: "#ff3d00", fontSize: 11, cursor: "pointer" }}>{"\uD83D\uDDD1"}</button>
+                          </div>
+                        </div>
+
+                        {editBannerIdx === idx && editBannerForm && (
+                          <div style={{ padding: "0 16px 16px" }}>
+                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 12 }}>
+                              <div style={{ gridColumn: "1 / -1" }}>
+                                <div style={{ fontSize: 10, fontWeight: 600, color: t.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 3 }}>Image URL</div>
+                                <input value={editBannerForm.imageUrl} onChange={e => setEditBannerForm(prev => ({ ...prev, imageUrl: e.target.value }))} placeholder="https://images.unsplash.com/... or your image URL"
+                                  style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: `1px solid ${t.borderInput}`, background: t.bgCard, color: t.text, fontSize: 13, outline: "none", boxSizing: "border-box" }} />
+                              </div>
+                              <div>
+                                <div style={{ fontSize: 10, fontWeight: 600, color: t.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 3 }}>Click-through Link</div>
+                                <input value={editBannerForm.link} onChange={e => setEditBannerForm(prev => ({ ...prev, link: e.target.value }))} placeholder="https://example.com"
+                                  style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: `1px solid ${t.borderInput}`, background: t.bgCard, color: t.text, fontSize: 13, outline: "none", boxSizing: "border-box" }} />
+                              </div>
+                              <div>
+                                <div style={{ fontSize: 10, fontWeight: 600, color: t.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 3 }}>Alt Text</div>
+                                <input value={editBannerForm.alt} onChange={e => setEditBannerForm(prev => ({ ...prev, alt: e.target.value }))} placeholder="Image description"
+                                  style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: `1px solid ${t.borderInput}`, background: t.bgCard, color: t.text, fontSize: 13, outline: "none", boxSizing: "border-box" }} />
+                              </div>
+                            </div>
+                            {editBannerForm.imageUrl && (
+                              <div>
+                                <div style={{ fontSize: 10, fontWeight: 600, color: t.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>Preview</div>
+                                <div style={{ width: "100%", height: 120, borderRadius: 10, overflow: "hidden", border: `1px solid ${t.border}` }}>
+                                  <img src={editBannerForm.imageUrl} alt={editBannerForm.alt || ""} style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                    onError={e => { e.target.style.display = "none"; }} />
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                    {banners.length === 0 && (
+                      <div style={{ textAlign: "center", padding: 20, color: t.textFaint, fontSize: 13 }}>No banners. Click "+ Add" to create one.</div>
+                    )}
+                  </div>
+                </div>
+
+                <div style={{ height: 1, background: t.border, margin: "0 0 24px" }} />
+
+                {/* PROMOTED LISTINGS HEADER */}
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                  <span style={{ fontSize: 16 }}>{"\uD83C\uDFE0"}</span>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: t.text }}>Promoted Listings</div>
+                </div>
+
                 {/* Action buttons */}
                 <div style={{ display: "flex", gap: 8, marginBottom: 24, flexWrap: "wrap" }}>
                   <button onClick={addNew} style={{ padding: "8px 16px", borderRadius: 10, border: `1px solid ${t.accent}40`, background: `${t.accent}10`, color: t.accent, fontWeight: 600, fontSize: 13, cursor: "pointer" }}>{"\u2795"} Add Listing</button>
