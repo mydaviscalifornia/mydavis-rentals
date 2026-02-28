@@ -146,6 +146,36 @@ const APARTMENTS = [
 });
 
 // ============================================================
+// THEMES
+// ============================================================
+const THEMES = {
+  dark: {
+    bg: "#0a0a0f", bgCard: "#111118", bgInput: "rgba(255,255,255,0.03)", bgHover: "rgba(255,255,255,0.03)",
+    border: "rgba(255,255,255,0.06)", borderLight: "rgba(255,255,255,0.04)", borderInput: "rgba(255,255,255,0.1)",
+    text: "#e8e8ed", textStrong: "#fff", textMuted: "#777", textDim: "#666", textFaint: "#555", textGhost: "#444",
+    accent: "#6366f1", accentLight: "#a5b4fc", accentBg: "rgba(99,102,241,0.15)",
+    headerBg: "rgba(10,10,15,0.95)", badgeBg: "rgba(255,215,0,0.08)", badgeBorder: "rgba(255,215,0,0.2)", badgeText: "#d4a017",
+    scrollThumb: "rgba(255,255,255,0.1)", chipBorder: "rgba(255,255,255,0.08)", chipHover: "rgba(255,255,255,0.2)",
+    modalBg: "rgba(0,0,0,0.7)", modalCard: "#111118", overlayBg: "rgba(0,0,0,0.8)",
+    rangeBg: "rgba(255,255,255,0.1)", rowHover: "rgba(255,255,255,0.03)",
+    scorePillBg: (c) => `${c}18`,
+    footerText: "#444",
+  },
+  light: {
+    bg: "#f5f5f0", bgCard: "#ffffff", bgInput: "rgba(0,0,0,0.04)", bgHover: "rgba(0,0,0,0.03)",
+    border: "rgba(0,0,0,0.08)", borderLight: "rgba(0,0,0,0.05)", borderInput: "rgba(0,0,0,0.12)",
+    text: "#1a1a2e", textStrong: "#000", textMuted: "#666", textDim: "#888", textFaint: "#aaa", textGhost: "#ccc",
+    accent: "#4f46e5", accentLight: "#6366f1", accentBg: "rgba(79,70,229,0.1)",
+    headerBg: "rgba(245,245,240,0.95)", badgeBg: "rgba(180,140,40,0.08)", badgeBorder: "rgba(180,140,40,0.25)", badgeText: "#8a6d1b",
+    scrollThumb: "rgba(0,0,0,0.12)", chipBorder: "rgba(0,0,0,0.1)", chipHover: "rgba(0,0,0,0.2)",
+    modalBg: "rgba(255,255,255,0.8)", modalCard: "#ffffff", overlayBg: "rgba(255,255,255,0.85)",
+    rangeBg: "rgba(0,0,0,0.1)", rowHover: "rgba(0,0,0,0.03)",
+    scorePillBg: (c) => `${c}15`,
+    footerText: "#999",
+  },
+};
+
+// ============================================================
 // COMPONENT
 // ============================================================
 export default function DavisRentals() {
@@ -160,7 +190,16 @@ export default function DavisRentals() {
   const [petOnly, setPetOnly] = useState(false);
   const [compareList, setCompareList] = useState([]);
   const [showCompare, setShowCompare] = useState(false);
+  const [isDark, setIsDark] = useState(() => {
+    try { const s = window.localStorage?.getItem?.("mdc-theme"); if (s) return s === "dark"; } catch(e) {}
+    return true;
+  });
   const modalRef = useRef(null);
+  const t = isDark ? THEMES.dark : THEMES.light;
+
+  useEffect(() => {
+    try { window.localStorage?.setItem?.("mdc-theme", isDark ? "dark" : "light"); } catch(e) {}
+  }, [isDark]);
 
   const allAmenities = useMemo(() => {
     const set = new Set();
@@ -213,54 +252,69 @@ export default function DavisRentals() {
   const areaEmoji = { Campus: "\uD83C\uDF93", Downtown: "\uD83C\uDFD9\uFE0F", Central: "\uD83C\uDFE0", North: "\u2B06\uFE0F", South: "\u2B07\uFE0F", East: "\u27A1\uFE0F", West: "\u2B05\uFE0F" };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0a0a0f", color: "#e8e8ed", fontFamily: "'DM Sans', -apple-system, sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: t.bg, color: t.text, fontFamily: "'DM Sans', -apple-system, sans-serif", transition: "background 0.3s, color 0.3s" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&family=JetBrains+Mono:wght@400;600&display=swap');
         * { box-sizing: border-box; margin: 0; }
         ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: ${t.scrollThumb}; border-radius: 4px; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
         .apt-row { transition: all 0.2s ease; cursor: pointer; }
-        .apt-row:hover { background: rgba(255,255,255,0.03) !important; }
-        .chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; border: 1px solid rgba(255,255,255,0.08); cursor: pointer; transition: all 0.15s; user-select: none; }
-        .chip:hover { border-color: rgba(255,255,255,0.2); }
-        .chip.active { background: rgba(99,102,241,0.15); border-color: #6366f1; color: #a5b4fc; }
+        .apt-row:hover { background: ${t.rowHover} !important; }
+        .chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; border: 1px solid ${t.chipBorder}; cursor: pointer; transition: all 0.15s; user-select: none; }
+        .chip:hover { border-color: ${t.chipHover}; }
+        .chip.active { background: ${t.accentBg}; border-color: ${t.accent}; color: ${t.accentLight}; }
         .score-pill { display: inline-flex; align-items: center; justify-content: center; min-width: 36px; padding: 2px 8px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; }
-        .filter-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: #666; font-weight: 600; margin-bottom: 6px; }
-        input[type=range] { -webkit-appearance: none; width: 100%; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.1); outline: none; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #6366f1; cursor: pointer; }
-        .compare-bar { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(15,15,25,0.95); backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.08); padding: 12px 24px; z-index: 100; animation: fadeIn 0.3s; display: flex; align-items: center; justify-content: space-between; }
+        .filter-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: ${t.textDim}; font-weight: 600; margin-bottom: 6px; }
+        input[type=range] { -webkit-appearance: none; width: 100%; height: 4px; border-radius: 2px; background: ${t.rangeBg}; outline: none; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: ${t.accent}; cursor: pointer; }
+        .compare-bar { position: fixed; bottom: 0; left: 0; right: 0; background: ${t.headerBg}; backdrop-filter: blur(20px); border-top: 1px solid ${t.border}; padding: 12px 24px; z-index: 100; animation: fadeIn 0.3s; display: flex; align-items: center; justify-content: space-between; }
       `}</style>
 
-      {/* HEADER */}
-      <div style={{ borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "16px 24px" }}>
+      {/* HEADER — MDC INSIDER + Theme Toggle */}
+      <div style={{ borderBottom: `1px solid ${t.border}`, padding: "14px 24px", background: t.headerBg, backdropFilter: "blur(20px)" }}>
         <div style={{ maxWidth: 1400, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <a href="https://mydaviscalifornia.com" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-            <div style={{ width: 32, height: 32, borderRadius: 8, background: "linear-gradient(135deg, #7B2D8E, #E84393)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Serif Display', serif", fontWeight: 700, fontSize: 10, color: "#fff" }}>MDC</div>
-            <div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#e8e8ed" }}>mydaviscalifornia</div>
-              <div style={{ fontSize: 9, color: "#555", textTransform: "uppercase", letterSpacing: 1.5 }}>Rental Market Guide</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            <a href="https://mydaviscalifornia.com" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
+              <div style={{ width: 34, height: 34, borderRadius: 8, background: "linear-gradient(135deg, #7B2D8E, #E84393)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Serif Display', serif", fontWeight: 700, fontSize: 10, color: t.textStrong }}>MDC</div>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: t.text }}>mydaviscalifornia</div>
+                <div style={{ fontSize: 9, color: t.textDim, textTransform: "uppercase", letterSpacing: 1.5 }}>Rental Market Guide</div>
+              </div>
+            </a>
+            <div style={{ padding: "4px 14px", borderRadius: 20, background: t.badgeBg, border: `1px solid ${t.badgeBorder}`, fontSize: 10, fontWeight: 700, color: t.badgeText, textTransform: "uppercase", letterSpacing: 1.5 }}>
+              MDC Insider
             </div>
-          </a>
-          <a href="https://mydaviscalifornia.com" style={{ fontSize: 12, color: "#666", textDecoration: "none" }}>{"\u2190"} Back to MDC</a>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <button onClick={() => setIsDark(!isDark)} aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"} style={{
+              width: 38, height: 38, borderRadius: 10, border: `1px solid ${t.border}`,
+              background: t.bgInput, display: "flex", alignItems: "center", justifyContent: "center",
+              cursor: "pointer", fontSize: 16, transition: "all 0.3s ease", position: "relative", overflow: "hidden",
+            }}>
+              <span style={{ transition: "transform 0.4s cubic-bezier(0.22,1,0.36,1), opacity 0.3s", transform: isDark ? "rotate(0deg) scale(1)" : "rotate(90deg) scale(0)", opacity: isDark ? 1 : 0, position: "absolute" }}>{"\u2600\uFE0F"}</span>
+              <span style={{ transition: "transform 0.4s cubic-bezier(0.22,1,0.36,1), opacity 0.3s", transform: isDark ? "rotate(-90deg) scale(0)" : "rotate(0deg) scale(1)", opacity: isDark ? 0 : 1, position: "absolute" }}>{"\uD83C\uDF19"}</span>
+            </button>
+            <a href="https://mydaviscalifornia.com" style={{ fontSize: 12, color: t.textMuted, textDecoration: "none", padding: "8px 14px", borderRadius: 8, border: `1px solid ${t.border}`, background: t.bgInput }}>{"\u2190"} Back to MDC</a>
+          </div>
         </div>
       </div>
 
       {/* HERO */}
       <div style={{ maxWidth: 1400, margin: "0 auto", padding: "48px 24px 32px" }}>
-        <div style={{ fontSize: 10, fontWeight: 700, color: "#6366f1", textTransform: "uppercase", letterSpacing: 3, marginBottom: 12 }}>Davis, California</div>
-        <h1 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 42, color: "#fff", margin: "0 0 8px", lineHeight: 1.1 }}>Every Apartment.<br />One Page.</h1>
-        <p style={{ fontSize: 15, color: "#777", maxWidth: 520, lineHeight: 1.6, margin: "0 0 24px" }}>Compare {APARTMENTS.length} apartment communities across Davis. Filter by price, amenities, and proximity to UC Davis or Downtown.</p>
+        <div style={{ fontSize: 10, fontWeight: 700, color: t.accent, textTransform: "uppercase", letterSpacing: 3, marginBottom: 12 }}>Davis, California</div>
+        <h1 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 42, color: t.textStrong, margin: "0 0 8px", lineHeight: 1.1 }}>Every Apartment.<br />One Page.</h1>
+        <p style={{ fontSize: 15, color: t.textMuted, maxWidth: 520, lineHeight: 1.6, margin: "0 0 24px" }}>Compare {APARTMENTS.length} apartment communities across Davis. Filter by price, amenities, and proximity to UC Davis or Downtown.</p>
 
         {/* Reference Point Legend */}
         <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 24 }}>
           {REFERENCE_POINTS.map(ref => (
-            <div key={ref.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 10, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+            <div key={ref.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 10, background: t.bgInput, border: `1px solid ${t.border}` }}>
               <span style={{ fontSize: 18 }}>{ref.emoji}</span>
               <div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: "#ccc" }}>Walk Score: {ref.label}</div>
-                <div style={{ fontSize: 10, color: "#666" }}>{ref.address}</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: t.text }}>Walk Score: {ref.label}</div>
+                <div style={{ fontSize: 10, color: t.textDim }}>{ref.address}</div>
               </div>
             </div>
           ))}
@@ -273,7 +327,7 @@ export default function DavisRentals() {
           {/* Search */}
           <div style={{ flex: "1 1 220px" }}>
             <div className="filter-label">Search</div>
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Name, address, area..." style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.03)", color: "#e8e8ed", fontSize: 13, outline: "none" }} />
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Name, address, area..." style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: `1px solid ${t.borderInput}`, background: t.bgInput, color: t.text, fontSize: 13, outline: "none" }} />
           </div>
           {/* Area */}
           <div>
@@ -308,57 +362,57 @@ export default function DavisRentals() {
           </div>
         </div>
 
-        <div style={{ marginTop: 16, fontSize: 12, color: "#555" }}>{filtered.length} of {APARTMENTS.length} apartments shown</div>
+        <div style={{ marginTop: 16, fontSize: 12, color: t.textFaint }}>{filtered.length} of {APARTMENTS.length} apartments shown</div>
       </div>
 
       {/* TABLE */}
       <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 24px 120px", overflowX: "auto" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
           <thead>
-            <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
-              <th style={{ padding: "10px 8px", textAlign: "left", color: "#666", fontSize: 10, textTransform: "uppercase", letterSpacing: 1.2, fontWeight: 600, width: 30 }}></th>
-              <th style={{ padding: "10px 8px", textAlign: "left", color: "#666", fontSize: 10, textTransform: "uppercase", letterSpacing: 1.2, fontWeight: 600 }}>Community</th>
-              <th style={{ padding: "10px 8px", textAlign: "left", color: "#666", fontSize: 10, textTransform: "uppercase", letterSpacing: 1.2, fontWeight: 600 }}>Type</th>
-              <th style={{ padding: "10px 8px", textAlign: "left", color: "#666", fontSize: 10, textTransform: "uppercase", letterSpacing: 1.2, fontWeight: 600 }}>Beds</th>
+            <tr style={{ borderBottom: `1px solid ${t.border}` }}>
+              <th style={{ padding: "10px 8px", textAlign: "left", color: t.textDim, fontSize: 10, textTransform: "uppercase", letterSpacing: 1.2, fontWeight: 600, width: 30 }}></th>
+              <th style={{ padding: "10px 8px", textAlign: "left", color: t.textDim, fontSize: 10, textTransform: "uppercase", letterSpacing: 1.2, fontWeight: 600 }}>Community</th>
+              <th style={{ padding: "10px 8px", textAlign: "left", color: t.textDim, fontSize: 10, textTransform: "uppercase", letterSpacing: 1.2, fontWeight: 600 }}>Type</th>
+              <th style={{ padding: "10px 8px", textAlign: "left", color: t.textDim, fontSize: 10, textTransform: "uppercase", letterSpacing: 1.2, fontWeight: 600 }}>Beds</th>
               {[{ col: "rentLow", label: "Rent From" }, { col: "rentHigh", label: "Rent To" }].map(h => (
-                <th key={h.col} onClick={() => toggleSort(h.col)} style={{ padding: "10px 8px", textAlign: "right", color: sortBy === h.col ? "#a5b4fc" : "#666", fontSize: 10, textTransform: "uppercase", letterSpacing: 1.2, fontWeight: 600, cursor: "pointer", userSelect: "none" }}>{h.label} {sortBy === h.col ? (sortDir === "desc" ? "\u25BC" : "\u25B2") : ""}</th>
+                <th key={h.col} onClick={() => toggleSort(h.col)} style={{ padding: "10px 8px", textAlign: "right", color: sortBy === h.col ? t.accentLight : t.textDim, fontSize: 10, textTransform: "uppercase", letterSpacing: 1.2, fontWeight: 600, cursor: "pointer", userSelect: "none" }}>{h.label} {sortBy === h.col ? (sortDir === "desc" ? "\u25BC" : "\u25B2") : ""}</th>
               ))}
               {REFERENCE_POINTS.map(ref => (
-                <th key={ref.id} onClick={() => toggleSort("avgScore")} style={{ padding: "10px 8px", textAlign: "center", color: sortBy === "avgScore" ? "#a5b4fc" : "#666", fontSize: 10, textTransform: "uppercase", letterSpacing: 1.2, fontWeight: 600, cursor: "pointer", userSelect: "none" }}>{ref.emoji} {ref.shortLabel}</th>
+                <th key={ref.id} onClick={() => toggleSort("avgScore")} style={{ padding: "10px 8px", textAlign: "center", color: sortBy === "avgScore" ? t.accentLight : t.textDim, fontSize: 10, textTransform: "uppercase", letterSpacing: 1.2, fontWeight: 600, cursor: "pointer", userSelect: "none" }}>{ref.emoji} {ref.shortLabel}</th>
               ))}
-              <th onClick={() => toggleSort("amenityCount")} style={{ padding: "10px 8px", textAlign: "center", color: sortBy === "amenityCount" ? "#a5b4fc" : "#666", fontSize: 10, textTransform: "uppercase", letterSpacing: 1.2, fontWeight: 600, cursor: "pointer", userSelect: "none" }}>Amenities {sortBy === "amenityCount" ? (sortDir === "desc" ? "\u25BC" : "\u25B2") : ""}</th>
-              <th style={{ padding: "10px 8px", textAlign: "center", color: "#666", fontSize: 10, textTransform: "uppercase", letterSpacing: 1.2, fontWeight: 600 }}>{"\uD83D\uDC3E"}</th>
+              <th onClick={() => toggleSort("amenityCount")} style={{ padding: "10px 8px", textAlign: "center", color: sortBy === "amenityCount" ? t.accentLight : t.textDim, fontSize: 10, textTransform: "uppercase", letterSpacing: 1.2, fontWeight: 600, cursor: "pointer", userSelect: "none" }}>Amenities {sortBy === "amenityCount" ? (sortDir === "desc" ? "\u25BC" : "\u25B2") : ""}</th>
+              <th style={{ padding: "10px 8px", textAlign: "center", color: t.textDim, fontSize: 10, textTransform: "uppercase", letterSpacing: 1.2, fontWeight: 600 }}>{"\uD83D\uDC3E"}</th>
             </tr>
           </thead>
           <tbody>
             {filtered.map((apt, i) => (
-              <tr key={apt.name} className="apt-row" onClick={() => setSelectedApt(apt)} style={{ borderBottom: "1px solid rgba(255,255,255,0.03)", animation: `fadeIn ${0.15 + i * 0.02}s ease` }}>
+              <tr key={apt.name} className="apt-row" onClick={() => setSelectedApt(apt)} style={{ borderBottom: `1px solid ${t.borderLight}`, animation: `fadeIn ${0.15 + i * 0.02}s ease` }}>
                 <td style={{ padding: "10px 8px" }}>
-                  <input type="checkbox" checked={compareList.some(a => a.name === apt.name)} onChange={e => { e.stopPropagation(); toggleCompare(apt); }} onClick={e => e.stopPropagation()} style={{ accentColor: "#6366f1" }} />
+                  <input type="checkbox" checked={compareList.some(a => a.name === apt.name)} onChange={e => { e.stopPropagation(); toggleCompare(apt); }} onClick={e => e.stopPropagation()} style={{ accentColor: t.accent }} />
                 </td>
                 <td style={{ padding: "10px 8px" }}>
-                  <div style={{ fontWeight: 600, color: "#e8e8ed" }}>{apt.name}</div>
-                  <div style={{ fontSize: 11, color: "#555" }}>{apt.address} {"\u00B7"} {areaEmoji[apt.area]} {apt.area}</div>
+                  <div style={{ fontWeight: 600, color: t.text }}>{apt.name}</div>
+                  <div style={{ fontSize: 11, color: t.textFaint }}>{apt.address} {"\u00B7"} {areaEmoji[apt.area]} {apt.area}</div>
                 </td>
                 <td style={{ padding: "10px 8px" }}>
                   <span style={{ display: "inline-block", padding: "2px 8px", borderRadius: 4, fontSize: 10, fontWeight: 700, background: `${typeColors[apt.type]}18`, color: typeColors[apt.type], textTransform: "uppercase", letterSpacing: 0.5 }}>{apt.type}</span>
                 </td>
-                <td style={{ padding: "10px 8px", fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: "#999" }}>{apt.beds}</td>
-                <td style={{ padding: "10px 8px", textAlign: "right", fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: "#e8e8ed" }}>${apt.rentLow.toLocaleString()}</td>
-                <td style={{ padding: "10px 8px", textAlign: "right", fontFamily: "'JetBrains Mono', monospace", color: "#777" }}>${apt.rentHigh.toLocaleString()}</td>
+                <td style={{ padding: "10px 8px", fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: t.textMuted }}>{apt.beds}</td>
+                <td style={{ padding: "10px 8px", textAlign: "right", fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: t.text }}>${apt.rentLow.toLocaleString()}</td>
+                <td style={{ padding: "10px 8px", textAlign: "right", fontFamily: "'JetBrains Mono', monospace", color: t.textMuted }}>${apt.rentHigh.toLocaleString()}</td>
                 {apt.scores.map(s => (
                   <td key={s.id} style={{ padding: "10px 8px", textAlign: "center" }}>
                     <span className="score-pill" style={{ background: `${walkColor(s.score)}18`, color: walkColor(s.score) }}>{s.score}</span>
                   </td>
                 ))}
-                <td style={{ padding: "10px 8px", textAlign: "center", fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: "#999" }}>{apt.amenityCount}</td>
+                <td style={{ padding: "10px 8px", textAlign: "center", fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: t.textMuted }}>{apt.amenityCount}</td>
                 <td style={{ padding: "10px 8px", textAlign: "center", fontSize: 14 }}>{apt.pet ? "\u2705" : "\u274C"}</td>
               </tr>
             ))}
           </tbody>
         </table>
         {filtered.length === 0 && (
-          <div style={{ textAlign: "center", padding: "60px 20px", color: "#555" }}>No apartments match your filters. Try adjusting your criteria.</div>
+          <div style={{ textAlign: "center", padding: "60px 20px", color: t.textFaint }}>No apartments match your filters. Try adjusting your criteria.</div>
         )}
       </div>
 
@@ -366,48 +420,48 @@ export default function DavisRentals() {
       {compareList.length > 0 && (
         <div className="compare-bar">
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <span style={{ fontSize: 12, color: "#999" }}>Compare ({compareList.length}/4):</span>
+            <span style={{ fontSize: 12, color: t.textMuted }}>Compare ({compareList.length}/4):</span>
             {compareList.map(a => (
-              <span key={a.name} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 10px", borderRadius: 6, background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.3)", fontSize: 11, color: "#a5b4fc" }}>
+              <span key={a.name} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 10px", borderRadius: 6, background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.3)", fontSize: 11, color: t.accentLight }}>
                 {a.name}
                 <span onClick={() => toggleCompare(a)} style={{ cursor: "pointer", opacity: 0.6 }}>{"\u2715"}</span>
               </span>
             ))}
           </div>
           <div style={{ display: "flex", gap: 8 }}>
-            <button onClick={() => setShowCompare(true)} style={{ padding: "8px 20px", borderRadius: 8, border: "none", background: "#6366f1", color: "#fff", fontWeight: 600, fontSize: 12, cursor: "pointer" }}>Compare Side-by-Side</button>
-            <button onClick={() => setCompareList([])} style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: "#999", fontSize: 12, cursor: "pointer" }}>Clear</button>
+            <button onClick={() => setShowCompare(true)} style={{ padding: "8px 20px", borderRadius: 8, border: "none", background: t.accent, color: "#fff", fontWeight: 600, fontSize: 12, cursor: "pointer" }}>Compare Side-by-Side</button>
+            <button onClick={() => setCompareList([])} style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: t.textMuted, fontSize: 12, cursor: "pointer" }}>Clear</button>
           </div>
         </div>
       )}
 
       {/* DETAIL MODAL */}
       {selectedApt && (
-        <div onClick={() => setSelectedApt(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", backdropFilter: "blur(12px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 200, animation: "fadeIn 0.2s" }}>
-          <div ref={modalRef} onClick={e => e.stopPropagation()} style={{ background: "#111118", borderRadius: 20, padding: 32, maxWidth: 560, width: "94%", border: "1px solid rgba(255,255,255,0.08)", maxHeight: "85vh", overflowY: "auto" }}>
+        <div onClick={() => setSelectedApt(null)} style={{ position: "fixed", inset: 0, background: t.modalBg, backdropFilter: "blur(12px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 200, animation: "fadeIn 0.2s" }}>
+          <div ref={modalRef} onClick={e => e.stopPropagation()} style={{ background: t.bgCard, borderRadius: 20, padding: 32, maxWidth: 560, width: "94%", border: `1px solid ${t.border}`, maxHeight: "85vh", overflowY: "auto" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
               <div>
                 <span style={{ display: "inline-block", padding: "2px 8px", borderRadius: 4, fontSize: 10, fontWeight: 700, background: `${typeColors[selectedApt.type]}18`, color: typeColors[selectedApt.type], textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>{selectedApt.type}</span>
-                <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 26, color: "#fff", margin: 0 }}>{selectedApt.name}</h2>
-                <div style={{ fontSize: 13, color: "#777", marginTop: 4 }}>{selectedApt.address}, Davis, CA {"\u00B7"} {areaEmoji[selectedApt.area]} {selectedApt.area} Davis</div>
+                <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 26, color: t.textStrong, margin: 0 }}>{selectedApt.name}</h2>
+                <div style={{ fontSize: 13, color: t.textMuted, marginTop: 4 }}>{selectedApt.address}, Davis, CA {"\u00B7"} {areaEmoji[selectedApt.area]} {selectedApt.area} Davis</div>
               </div>
-              <button onClick={() => setSelectedApt(null)} style={{ width: 32, height: 32, borderRadius: 8, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: "#999", fontSize: 16, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>{"\u2715"}</button>
+              <button onClick={() => setSelectedApt(null)} style={{ width: 32, height: 32, borderRadius: 8, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: t.textMuted, fontSize: 16, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>{"\u2715"}</button>
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
-              <div style={{ padding: 14, borderRadius: 12, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                <div style={{ fontSize: 10, color: "#666", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>Monthly Rent</div>
-                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 20, fontWeight: 700, color: "#fff" }}>${selectedApt.rentLow.toLocaleString()} - ${selectedApt.rentHigh.toLocaleString()}</div>
+              <div style={{ padding: 14, borderRadius: 12, background: t.bgInput, border: `1px solid ${t.border}` }}>
+                <div style={{ fontSize: 10, color: t.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>Monthly Rent</div>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 20, fontWeight: 700, color: t.textStrong }}>${selectedApt.rentLow.toLocaleString()} - ${selectedApt.rentHigh.toLocaleString()}</div>
               </div>
-              <div style={{ padding: 14, borderRadius: 12, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                <div style={{ fontSize: 10, color: "#666", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>Details</div>
-                <div style={{ fontSize: 13, color: "#ccc" }}>{selectedApt.beds} bed {"\u00B7"} {selectedApt.units} units {"\u00B7"} Built {selectedApt.built}</div>
+              <div style={{ padding: 14, borderRadius: 12, background: t.bgInput, border: `1px solid ${t.border}` }}>
+                <div style={{ fontSize: 10, color: t.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>Details</div>
+                <div style={{ fontSize: 13, color: t.text }}>{selectedApt.beds} bed {"\u00B7"} {selectedApt.units} units {"\u00B7"} Built {selectedApt.built}</div>
               </div>
             </div>
 
             {/* Walk Scores */}
             <div style={{ marginBottom: 20 }}>
-              <div style={{ fontSize: 10, color: "#666", textTransform: "uppercase", letterSpacing: 1.5, fontWeight: 600, marginBottom: 10 }}>Proximity Scores</div>
+              <div style={{ fontSize: 10, color: t.textDim, textTransform: "uppercase", letterSpacing: 1.5, fontWeight: 600, marginBottom: 10 }}>Proximity Scores</div>
               {selectedApt.scores.map(s => {
                 const ref = REFERENCE_POINTS.find(r => r.id === s.id);
                 return (
@@ -415,10 +469,10 @@ export default function DavisRentals() {
                     <span style={{ fontSize: 20 }}>{ref.emoji}</span>
                     <div style={{ flex: 1 }}>
                       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
-                        <span style={{ fontSize: 12, color: "#ccc" }}>{ref.label}</span>
-                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#999" }}>{s.distance.toFixed(1)} mi {"\u00B7"} {walkLabel(s.score)}</span>
+                        <span style={{ fontSize: 12, color: t.text }}>{ref.label}</span>
+                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: t.textMuted }}>{s.distance.toFixed(1)} mi {"\u00B7"} {walkLabel(s.score)}</span>
                       </div>
-                      <div style={{ height: 6, borderRadius: 3, background: "rgba(255,255,255,0.06)" }}>
+                      <div style={{ height: 6, borderRadius: 3, background: t.bgInput }}>
                         <div style={{ width: `${s.score}%`, height: "100%", borderRadius: 3, background: walkColor(s.score), transition: "width 0.6s ease" }} />
                       </div>
                     </div>
@@ -430,32 +484,32 @@ export default function DavisRentals() {
 
             {/* Amenities */}
             <div style={{ marginBottom: 20 }}>
-              <div style={{ fontSize: 10, color: "#666", textTransform: "uppercase", letterSpacing: 1.5, fontWeight: 600, marginBottom: 8 }}>Amenities</div>
+              <div style={{ fontSize: 10, color: t.textDim, textTransform: "uppercase", letterSpacing: 1.5, fontWeight: 600, marginBottom: 8 }}>Amenities</div>
               <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                {selectedApt.amenities.map(am => <span key={am} style={{ padding: "4px 10px", borderRadius: 6, fontSize: 11, fontWeight: 500, background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.2)", color: "#a5b4fc" }}>{am}</span>)}
+                {selectedApt.amenities.map(am => <span key={am} style={{ padding: "4px 10px", borderRadius: 6, fontSize: 11, fontWeight: 500, background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.2)", color: t.accentLight }}>{am}</span>)}
                 <span style={{ padding: "4px 10px", borderRadius: 6, fontSize: 11, fontWeight: 500, background: selectedApt.pet ? "rgba(16,185,129,0.08)" : "rgba(255,61,0,0.08)", border: `1px solid ${selectedApt.pet ? "rgba(16,185,129,0.2)" : "rgba(255,61,0,0.2)"}`, color: selectedApt.pet ? "#10b981" : "#ff3d00" }}>{selectedApt.pet ? "\uD83D\uDC3E Pets Welcome" : "\uD83D\uDEAB No Pets"}</span>
               </div>
             </div>
 
-            <div style={{ fontSize: 11, color: "#555", lineHeight: 1.5 }}>Managed by {selectedApt.mgmt} {"\u00B7"} Data approximate. Contact community for current pricing and availability.</div>
+            <div style={{ fontSize: 11, color: t.textFaint, lineHeight: 1.5 }}>Managed by {selectedApt.mgmt} {"\u00B7"} Data approximate. Contact community for current pricing and availability.</div>
           </div>
         </div>
       )}
 
       {/* COMPARE MODAL */}
       {showCompare && compareList.length > 0 && (
-        <div onClick={() => setShowCompare(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", backdropFilter: "blur(12px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 200, animation: "fadeIn 0.2s" }}>
-          <div onClick={e => e.stopPropagation()} style={{ background: "#111118", borderRadius: 20, padding: 32, maxWidth: 900, width: "96%", border: "1px solid rgba(255,255,255,0.08)", maxHeight: "85vh", overflowY: "auto" }}>
+        <div onClick={() => setShowCompare(false)} style={{ position: "fixed", inset: 0, background: t.modalBg, backdropFilter: "blur(12px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 200, animation: "fadeIn 0.2s" }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: t.bgCard, borderRadius: 20, padding: 32, maxWidth: 900, width: "96%", border: `1px solid ${t.border}`, maxHeight: "85vh", overflowY: "auto" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-              <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, color: "#fff", margin: 0 }}>Side-by-Side Comparison</h2>
-              <button onClick={() => setShowCompare(false)} style={{ width: 32, height: 32, borderRadius: 8, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: "#999", fontSize: 16, cursor: "pointer" }}>{"\u2715"}</button>
+              <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, color: t.textStrong, margin: 0 }}>Side-by-Side Comparison</h2>
+              <button onClick={() => setShowCompare(false)} style={{ width: 32, height: 32, borderRadius: 8, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: t.textMuted, fontSize: 16, cursor: "pointer" }}>{"\u2715"}</button>
             </div>
             <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
                 <thead>
-                  <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
-                    <th style={{ padding: "8px 12px", textAlign: "left", color: "#666", fontSize: 10, textTransform: "uppercase" }}></th>
-                    {compareList.map(a => <th key={a.name} style={{ padding: "8px 12px", textAlign: "center", color: "#e8e8ed", fontSize: 13, fontWeight: 600, minWidth: 160 }}>{a.name}</th>)}
+                  <tr style={{ borderBottom: `1px solid ${t.border}` }}>
+                    <th style={{ padding: "8px 12px", textAlign: "left", color: t.textDim, fontSize: 10, textTransform: "uppercase" }}></th>
+                    {compareList.map(a => <th key={a.name} style={{ padding: "8px 12px", textAlign: "center", color: t.text, fontSize: 13, fontWeight: 600, minWidth: 160 }}>{a.name}</th>)}
                   </tr>
                 </thead>
                 <tbody>
@@ -474,10 +528,10 @@ export default function DavisRentals() {
                     })),
                     { label: "Amenities", fn: a => a.amenities.join(", ") },
                   ].map((row, i) => (
-                    <tr key={i} style={{ borderBottom: "1px solid rgba(255,255,255,0.03)" }}>
-                      <td style={{ padding: "8px 12px", color: "#777", fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.5 }}>{row.label}</td>
+                    <tr key={i} style={{ borderBottom: `1px solid ${t.borderLight}` }}>
+                      <td style={{ padding: "8px 12px", color: t.textMuted, fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.5 }}>{row.label}</td>
                       {compareList.map(a => (
-                        <td key={a.name} style={{ padding: "8px 12px", textAlign: "center", fontFamily: row.isScore ? "'JetBrains Mono', monospace" : "inherit", color: "#ccc", fontSize: 12 }}>
+                        <td key={a.name} style={{ padding: "8px 12px", textAlign: "center", fontFamily: row.isScore ? "'JetBrains Mono', monospace" : "inherit", color: t.text, fontSize: 12 }}>
                           {row.isScore ? (() => {
                             const s = a.scores.find(sc => sc.id === row.refId);
                             return <span className="score-pill" style={{ background: `${walkColor(s.score)}18`, color: walkColor(s.score) }}>{s.score}</span>;
@@ -494,8 +548,8 @@ export default function DavisRentals() {
       )}
 
       {/* FOOTER */}
-      <div style={{ borderTop: "1px solid rgba(255,255,255,0.04)", padding: "20px 24px", textAlign: "center" }}>
-        <div style={{ fontSize: 11, color: "#444", lineHeight: 1.6 }}>
+      <div style={{ borderTop: `1px solid ${t.borderLight}`, padding: "20px 24px", textAlign: "center" }}>
+        <div style={{ fontSize: 11, color: t.footerText, lineHeight: 1.6 }}>
           {"\u00A9"} 2026 mydaviscalifornia.com {"\u00B7"} Rental data is approximate and updated periodically. Contact each community directly for current pricing and availability.
           <br />Walk scores are calculated based on straight-line distance to UC Davis (420 Hutchison Dr) and Downtown Davis (730 3rd St).
         </div>
