@@ -176,6 +176,60 @@ const THEMES = {
 };
 
 // ============================================================
+// DEFAULT PROMOTED LISTINGS
+// ============================================================
+const DEFAULT_PROMOTED = [
+  {
+    name: "The Edge Apartments",
+    tagline: "South Davis Living Redefined",
+    promo: "1 Month Free on Select 2BR Units",
+    address: "4255 Cowell Blvd, South Davis",
+    beds: "1-3 Bed",
+    rent: "From $1,800/mo",
+    highlights: ["Pool & Fitness", "Pet Friendly", "Clubhouse"],
+    link: "tel:+15307569090",
+    cta: "Call for Move-In Special",
+    color: "#6366f1",
+  },
+  {
+    name: "Renaissance Park",
+    tagline: "Modern Living in South Davis",
+    promo: "Now Leasing \u2014 EV Charging Available",
+    address: "3000 Lillard Dr, South Davis",
+    beds: "1-3 Bed",
+    rent: "From $1,867/mo",
+    highlights: ["W/D In-Unit", "Dog Park", "EV Charging"],
+    link: "tel:+15307571221",
+    cta: "Schedule a Tour",
+    color: "#10b981",
+  },
+  {
+    name: "Identity Davis",
+    tagline: "Purpose-Built Student Living",
+    promo: "Fall 2026 Pre-Leasing Open \u2014 $200 Off",
+    address: "525 Oxford Cir, Central Davis",
+    beds: "3-5 Bed",
+    rent: "From $1,019/bed",
+    highlights: ["Furnished", "Shuttle to UCD", "Study Lounge"],
+    link: "tel:+15302970222",
+    cta: "Reserve Your Room",
+    color: "#f59e0b",
+  },
+];
+
+const ADMIN_PASSWORD = "mdc2026";
+const COLOR_OPTIONS = [
+  { label: "Indigo", value: "#6366f1" },
+  { label: "Emerald", value: "#10b981" },
+  { label: "Amber", value: "#f59e0b" },
+  { label: "Rose", value: "#ec4899" },
+  { label: "Purple", value: "#7B2D8E" },
+  { label: "Teal", value: "#14b8a6" },
+  { label: "Blue", value: "#3b82f6" },
+  { label: "Orange", value: "#f97316" },
+];
+
+// ============================================================
 // COMPONENT
 // ============================================================
 export default function DavisRentals() {
@@ -194,8 +248,28 @@ export default function DavisRentals() {
     try { const s = window.localStorage?.getItem?.("mdc-theme"); if (s) return s === "dark"; } catch(e) {}
     return true;
   });
+
+  // Admin state
+  const [showAdmin, setShowAdmin] = useState(false);
+  const [adminAuth, setAdminAuth] = useState(false);
+  const [adminPass, setAdminPass] = useState("");
+  const [adminError, setAdminError] = useState("");
+  const [editIdx, setEditIdx] = useState(null);
+  const [editForm, setEditForm] = useState(null);
+  const [promoted, setPromoted] = useState(() => {
+    try {
+      const saved = window.localStorage?.getItem?.("mdc-promoted");
+      if (saved) return JSON.parse(saved);
+    } catch(e) {}
+    return DEFAULT_PROMOTED;
+  });
+
   const modalRef = useRef(null);
   const t = isDark ? THEMES.dark : THEMES.light;
+
+  useEffect(() => {
+    try { window.localStorage?.setItem?.("mdc-promoted", JSON.stringify(promoted)); } catch(e) {}
+  }, [promoted]);
 
   useEffect(() => {
     try { window.localStorage?.setItem?.("mdc-theme", isDark ? "dark" : "light"); } catch(e) {}
@@ -251,44 +325,39 @@ export default function DavisRentals() {
   const typeColors = { General: "#6366f1", Student: "#f59e0b", Senior: "#10b981", Affordable: "#ec4899" };
   const areaEmoji = { Campus: "\uD83C\uDF93", Downtown: "\uD83C\uDFD9\uFE0F", Central: "\uD83C\uDFE0", North: "\u2B06\uFE0F", South: "\u2B07\uFE0F", East: "\u27A1\uFE0F", West: "\u2B05\uFE0F" };
 
-  const PROMOTED = [
-    {
-      name: "The Edge Apartments",
-      tagline: "South Davis Living Redefined",
-      promo: "1 Month Free on Select 2BR Units",
-      address: "4255 Cowell Blvd, South Davis",
-      beds: "1-3 Bed",
-      rent: "From $1,800/mo",
-      highlights: ["Pool & Fitness", "Pet Friendly", "Clubhouse"],
-      link: "tel:+15307569090",
-      cta: "Call for Move-In Special",
-      color: "#6366f1",
-    },
-    {
-      name: "Renaissance Park",
-      tagline: "Modern Living in South Davis",
-      promo: "Now Leasing \u2014 EV Charging Available",
-      address: "3000 Lillard Dr, South Davis",
-      beds: "1-3 Bed",
-      rent: "From $1,867/mo",
-      highlights: ["W/D In-Unit", "Dog Park", "EV Charging"],
-      link: "tel:+15307571221",
-      cta: "Schedule a Tour",
-      color: "#10b981",
-    },
-    {
-      name: "Identity Davis",
-      tagline: "Purpose-Built Student Living",
-      promo: "Fall 2026 Pre-Leasing Open \u2014 $200 Off",
-      address: "525 Oxford Cir, Central Davis",
-      beds: "3-5 Bed",
-      rent: "From $1,019/bed",
-      highlights: ["Furnished", "Shuttle to UCD", "Study Lounge"],
-      link: "tel:+15302970222",
-      cta: "Reserve Your Room",
-      color: "#f59e0b",
-    },
-  ];
+  // Admin helpers
+  const startEdit = (idx) => {
+    setEditIdx(idx);
+    setEditForm({ ...promoted[idx], highlights: [...promoted[idx].highlights] });
+  };
+  const cancelEdit = () => { setEditIdx(null); setEditForm(null); };
+  const saveEdit = () => {
+    if (!editForm.name) return;
+    const updated = [...promoted];
+    updated[editIdx] = { ...editForm };
+    setPromoted(updated);
+    setEditIdx(null);
+    setEditForm(null);
+  };
+  const addNew = () => {
+    const blank = { name: "", tagline: "", promo: "", address: "", beds: "", rent: "", highlights: [""], link: "", cta: "Learn More", color: "#6366f1" };
+    setPromoted([...promoted, blank]);
+    setEditIdx(promoted.length);
+    setEditForm({ ...blank, highlights: [""] });
+  };
+  const removePromo = (idx) => {
+    setPromoted(promoted.filter((_, i) => i !== idx));
+    if (editIdx === idx) cancelEdit();
+  };
+  const resetDefaults = () => { setPromoted(DEFAULT_PROMOTED); cancelEdit(); };
+  const updateField = (field, value) => setEditForm(prev => ({ ...prev, [field]: value }));
+  const updateHighlight = (i, val) => {
+    const h = [...editForm.highlights];
+    h[i] = val;
+    setEditForm(prev => ({ ...prev, highlights: h }));
+  };
+  const addHighlight = () => setEditForm(prev => ({ ...prev, highlights: [...prev.highlights, ""] }));
+  const removeHighlight = (i) => setEditForm(prev => ({ ...prev, highlights: prev.highlights.filter((_, j) => j !== i) }));
 
   return (
     <div style={{ minHeight: "100vh", background: t.bg, color: t.text, fontFamily: "'DM Sans', -apple-system, sans-serif", transition: "background 0.3s, color 0.3s" }}>
@@ -335,6 +404,11 @@ export default function DavisRentals() {
               <span style={{ transition: "transform 0.4s cubic-bezier(0.22,1,0.36,1), opacity 0.3s", transform: isDark ? "rotate(0deg) scale(1)" : "rotate(90deg) scale(0)", opacity: isDark ? 1 : 0, position: "absolute" }}>{"\u2600\uFE0F"}</span>
               <span style={{ transition: "transform 0.4s cubic-bezier(0.22,1,0.36,1), opacity 0.3s", transform: isDark ? "rotate(-90deg) scale(0)" : "rotate(0deg) scale(1)", opacity: isDark ? 0 : 1, position: "absolute" }}>{"\uD83C\uDF19"}</span>
             </button>
+            <button onClick={() => { setShowAdmin(!showAdmin); if (!showAdmin && !adminAuth) { setAdminPass(""); setAdminError(""); } }} title="Admin" style={{
+              width: 38, height: 38, borderRadius: 10, border: `1px solid ${t.border}`,
+              background: showAdmin ? t.accentBg : t.bgInput, display: "flex", alignItems: "center", justifyContent: "center",
+              cursor: "pointer", fontSize: 16, transition: "all 0.3s ease", color: showAdmin ? t.accent : t.textDim,
+            }}>{"\u2699\uFE0F"}</button>
             <a href="https://mydaviscalifornia.com" style={{ fontSize: 12, color: t.textMuted, textDecoration: "none", padding: "8px 14px", borderRadius: 8, border: `1px solid ${t.border}`, background: t.bgInput }}>{"\u2190"} Back to MDC</a>
           </div>
         </div>
@@ -367,7 +441,7 @@ export default function DavisRentals() {
           <div style={{ padding: "2px 8px", borderRadius: 4, background: t.badgeBg, border: `1px solid ${t.badgeBorder}`, fontSize: 9, fontWeight: 700, color: t.badgeText, textTransform: "uppercase", letterSpacing: 1 }}>Sponsored</div>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 16 }}>
-          {PROMOTED.map((p, i) => (
+          {promoted.map((p, i) => (
             <div key={i} style={{
               borderRadius: 16, padding: 24, position: "relative", overflow: "hidden",
               background: isDark ? `linear-gradient(145deg, ${p.color}12, ${p.color}06)` : `linear-gradient(145deg, ${p.color}08, ${p.color}03)`,
@@ -630,6 +704,166 @@ export default function DavisRentals() {
                 </tbody>
               </table>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ADMIN PANEL */}
+      {showAdmin && (
+        <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 24px 40px", animation: "fadeIn 0.3s" }}>
+          <div style={{ borderRadius: 20, border: `2px solid ${t.accent}30`, background: t.bgCard, overflow: "hidden" }}>
+            <div style={{ padding: "20px 24px", borderBottom: `1px solid ${t.border}`, display: "flex", justifyContent: "space-between", alignItems: "center", background: `${t.accent}08` }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <span style={{ fontSize: 20 }}>{"\u2699\uFE0F"}</span>
+                <div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: t.textStrong, fontFamily: "'DM Serif Display', serif" }}>Promoted Listings Admin</div>
+                  <div style={{ fontSize: 12, color: t.textMuted }}>Manage featured apartment placements</div>
+                </div>
+              </div>
+              <button onClick={() => setShowAdmin(false)} style={{ width: 32, height: 32, borderRadius: 8, border: `1px solid ${t.border}`, background: "transparent", color: t.textMuted, fontSize: 16, cursor: "pointer" }}>{"\u2715"}</button>
+            </div>
+
+            {!adminAuth ? (
+              <div style={{ padding: 32, textAlign: "center", maxWidth: 360, margin: "0 auto" }}>
+                <div style={{ fontSize: 14, fontWeight: 600, color: t.text, marginBottom: 16 }}>Enter admin password</div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <input type="password" value={adminPass} onChange={e => { setAdminPass(e.target.value); setAdminError(""); }}
+                    onKeyDown={e => { if (e.key === "Enter") { if (adminPass === ADMIN_PASSWORD) setAdminAuth(true); else setAdminError("Incorrect password"); } }}
+                    placeholder="Password" style={{ flex: 1, padding: "10px 14px", borderRadius: 10, border: `1px solid ${adminError ? "#ff3d00" : t.borderInput}`, background: t.bgInput, color: t.text, fontSize: 14, outline: "none" }} />
+                  <button onClick={() => { if (adminPass === ADMIN_PASSWORD) setAdminAuth(true); else setAdminError("Incorrect password"); }}
+                    style={{ padding: "10px 20px", borderRadius: 10, border: "none", background: t.accent, color: "#fff", fontWeight: 600, fontSize: 13, cursor: "pointer" }}>Unlock</button>
+                </div>
+                {adminError && <div style={{ fontSize: 12, color: "#ff3d00", marginTop: 8 }}>{adminError}</div>}
+              </div>
+            ) : (
+              <div style={{ padding: 24 }}>
+                {/* Action buttons */}
+                <div style={{ display: "flex", gap: 8, marginBottom: 24, flexWrap: "wrap" }}>
+                  <button onClick={addNew} style={{ padding: "8px 16px", borderRadius: 10, border: `1px solid ${t.accent}40`, background: `${t.accent}10`, color: t.accent, fontWeight: 600, fontSize: 13, cursor: "pointer" }}>{"\u2795"} Add Listing</button>
+                  <button onClick={resetDefaults} style={{ padding: "8px 16px", borderRadius: 10, border: `1px solid ${t.border}`, background: t.bgInput, color: t.textMuted, fontWeight: 600, fontSize: 13, cursor: "pointer" }}>{"\u21BA"} Reset to Defaults</button>
+                  <button onClick={() => { setAdminAuth(false); setAdminPass(""); }} style={{ padding: "8px 16px", borderRadius: 10, border: `1px solid ${t.border}`, background: t.bgInput, color: t.textMuted, fontWeight: 600, fontSize: 13, cursor: "pointer", marginLeft: "auto" }}>{"\uD83D\uDD12"} Lock</button>
+                </div>
+
+                {/* Listing cards */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {promoted.map((p, idx) => (
+                    <div key={idx} style={{ borderRadius: 14, border: `1px solid ${editIdx === idx ? t.accent : t.border}`, background: editIdx === idx ? `${t.accent}05` : t.bgInput, overflow: "hidden", transition: "all 0.2s" }}>
+                      {/* Card header - always visible */}
+                      <div style={{ padding: "14px 18px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                          <div style={{ width: 12, height: 12, borderRadius: 3, background: p.color }} />
+                          <div>
+                            <div style={{ fontSize: 14, fontWeight: 700, color: t.text }}>{p.name || "(Untitled)"}</div>
+                            <div style={{ fontSize: 12, color: t.textMuted }}>{p.promo || "No promo set"}</div>
+                          </div>
+                        </div>
+                        <div style={{ display: "flex", gap: 6 }}>
+                          {editIdx !== idx ? (
+                            <button onClick={() => startEdit(idx)} style={{ padding: "6px 14px", borderRadius: 8, border: `1px solid ${t.border}`, background: t.bgInput, color: t.text, fontSize: 12, fontWeight: 600, cursor: "pointer" }}>{"\u270F\uFE0F"} Edit</button>
+                          ) : (
+                            <>
+                              <button onClick={saveEdit} style={{ padding: "6px 14px", borderRadius: 8, border: "none", background: t.accent, color: "#fff", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>{"\u2714"} Save</button>
+                              <button onClick={cancelEdit} style={{ padding: "6px 14px", borderRadius: 8, border: `1px solid ${t.border}`, background: t.bgInput, color: t.textMuted, fontSize: 12, fontWeight: 600, cursor: "pointer" }}>Cancel</button>
+                            </>
+                          )}
+                          <button onClick={() => removePromo(idx)} style={{ padding: "6px 10px", borderRadius: 8, border: `1px solid rgba(255,61,0,0.2)`, background: "rgba(255,61,0,0.05)", color: "#ff3d00", fontSize: 12, cursor: "pointer" }}>{"\uD83D\uDDD1"}</button>
+                        </div>
+                      </div>
+
+                      {/* Edit form - only when editing this card */}
+                      {editIdx === idx && editForm && (
+                        <div style={{ padding: "0 18px 18px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                          {[
+                            { label: "Community Name", field: "name", placeholder: "e.g. The Edge Apartments", full: false },
+                            { label: "Tagline", field: "tagline", placeholder: "e.g. South Davis Living Redefined", full: false },
+                            { label: "Address", field: "address", placeholder: "e.g. 4255 Cowell Blvd, South Davis", full: false },
+                            { label: "Current Promo", field: "promo", placeholder: "e.g. 1 Month Free on Select 2BR", full: false },
+                            { label: "Bed Config", field: "beds", placeholder: "e.g. 1-3 Bed", full: false },
+                            { label: "Rent Display", field: "rent", placeholder: "e.g. From $1,800/mo", full: false },
+                            { label: "CTA Button Text", field: "cta", placeholder: "e.g. Schedule a Tour", full: false },
+                            { label: "Link (URL or tel:)", field: "link", placeholder: "e.g. tel:+15307569090 or https://...", full: false },
+                          ].map(f => (
+                            <div key={f.field} style={f.full ? { gridColumn: "1 / -1" } : {}}>
+                              <div style={{ fontSize: 11, fontWeight: 600, color: t.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>{f.label}</div>
+                              <input value={editForm[f.field]} onChange={e => updateField(f.field, e.target.value)} placeholder={f.placeholder}
+                                style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: `1px solid ${t.borderInput}`, background: t.bgCard, color: t.text, fontSize: 13, outline: "none", boxSizing: "border-box" }} />
+                            </div>
+                          ))}
+
+                          {/* Color picker */}
+                          <div>
+                            <div style={{ fontSize: 11, fontWeight: 600, color: t.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>Card Color</div>
+                            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                              {COLOR_OPTIONS.map(c => (
+                                <button key={c.value} onClick={() => updateField("color", c.value)} title={c.label} style={{
+                                  width: 28, height: 28, borderRadius: 6, background: c.value, border: editForm.color === c.value ? "3px solid #fff" : "2px solid transparent",
+                                  cursor: "pointer", boxShadow: editForm.color === c.value ? `0 0 0 2px ${c.value}` : "none", transition: "all 0.15s",
+                                }} />
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Highlights */}
+                          <div>
+                            <div style={{ fontSize: 11, fontWeight: 600, color: t.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>Highlights / Amenities</div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                              {editForm.highlights.map((h, hi) => (
+                                <div key={hi} style={{ display: "flex", gap: 6 }}>
+                                  <input value={h} onChange={e => updateHighlight(hi, e.target.value)} placeholder={`Highlight ${hi + 1}`}
+                                    style={{ flex: 1, padding: "6px 10px", borderRadius: 6, border: `1px solid ${t.borderInput}`, background: t.bgCard, color: t.text, fontSize: 12, outline: "none" }} />
+                                  {editForm.highlights.length > 1 && (
+                                    <button onClick={() => removeHighlight(hi)} style={{ width: 28, height: 28, borderRadius: 6, border: `1px solid ${t.border}`, background: "transparent", color: t.textMuted, fontSize: 12, cursor: "pointer" }}>{"\u2715"}</button>
+                                  )}
+                                </div>
+                              ))}
+                              {editForm.highlights.length < 5 && (
+                                <button onClick={addHighlight} style={{ padding: "4px 10px", borderRadius: 6, border: `1px dashed ${t.border}`, background: "transparent", color: t.textMuted, fontSize: 11, cursor: "pointer", alignSelf: "flex-start" }}>{"\u002B"} Add Highlight</button>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Live preview */}
+                          <div style={{ gridColumn: "1 / -1", marginTop: 8 }}>
+                            <div style={{ fontSize: 11, fontWeight: 600, color: t.textDim, textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>Live Preview</div>
+                            <div style={{
+                              borderRadius: 14, padding: 20, position: "relative",
+                              background: isDark ? `linear-gradient(145deg, ${editForm.color}12, ${editForm.color}06)` : `linear-gradient(145deg, ${editForm.color}08, ${editForm.color}03)`,
+                              border: `1px solid ${isDark ? `${editForm.color}30` : `${editForm.color}20`}`,
+                            }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
+                                <div>
+                                  <div style={{ fontSize: 16, fontWeight: 700, color: t.textStrong, fontFamily: "'DM Serif Display', serif" }}>{editForm.name || "Community Name"}</div>
+                                  <div style={{ fontSize: 11, color: t.textMuted, marginTop: 2 }}>{editForm.address || "Address"}</div>
+                                </div>
+                                <div style={{ padding: "3px 8px", borderRadius: 6, background: `${editForm.color}18`, fontSize: 11, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", color: editForm.color }}>{editForm.rent || "$0/mo"}</div>
+                              </div>
+                              {editForm.promo && (
+                                <div style={{ padding: "6px 10px", borderRadius: 6, background: `${editForm.color}10`, border: `1px solid ${editForm.color}20`, marginBottom: 10 }}>
+                                  <div style={{ fontSize: 12, fontWeight: 700, color: editForm.color }}>{"\u2728"} {editForm.promo}</div>
+                                </div>
+                              )}
+                              <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 12 }}>
+                                <span style={{ fontSize: 11, color: t.textMuted, fontWeight: 600 }}>{editForm.beds}</span>
+                                {editForm.highlights.filter(Boolean).map((h, j) => (
+                                  <span key={j} style={{ fontSize: 11, color: t.textMuted }}>{"\u00B7"} {h}</span>
+                                ))}
+                              </div>
+                              <div style={{ textAlign: "center", padding: "8px 0", borderRadius: 8, background: `linear-gradient(135deg, ${editForm.color}, ${editForm.color}cc)`, color: "#fff", fontSize: 12, fontWeight: 700 }}>{editForm.cta || "Learn More"} {"\u2192"}</div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {promoted.length === 0 && (
+                  <div style={{ textAlign: "center", padding: 40, color: t.textFaint }}>
+                    No promoted listings. Click "Add Listing" to create one.
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}
