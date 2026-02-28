@@ -9,7 +9,7 @@ const SHEETS_API_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
 
 async function fetchAdsData() {
   try {
-    if (SHEETS_API_URL === "https://script.google.com/macros/s/AKfycbz_cC3rVBDL6Ie2wAAe3Vj1l8jyG7R-u0-yAjUmDq-OFuHCduLQUmGf8p-fRxXSB-sL/exec") return null;
+    if (SHEETS_API_URL === "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE") return null;
     const res = await fetch(SHEETS_API_URL);
     const data = await res.json();
     if (data.success) return { banners: data.banners, promoted: data.promoted };
@@ -19,7 +19,7 @@ async function fetchAdsData() {
 
 async function saveAdsData(banners, promoted) {
   try {
-    if (SHEETS_API_URL === "https://script.google.com/macros/s/AKfycbz_cC3rVBDL6Ie2wAAe3Vj1l8jyG7R-u0-yAjUmDq-OFuHCduLQUmGf8p-fRxXSB-sL/exec") return false;
+    if (SHEETS_API_URL === "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE") return false;
     const res = await fetch(SHEETS_API_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain" },
@@ -131,6 +131,7 @@ const APARTMENTS = [
 
   // === EAST DAVIS (MACE RANCH) ===
   { name: "Alhambra at Mace Ranch", address: "2753 Alhambra Dr", lat: 38.5460, lng: -121.7180, area: "East", type: "General", beds: "1-3", rentLow: 2000, rentHigh: 3100, amenities: ["Pool", "Fitness", "W/D In-Unit", "Parking", "Playground", "EV Charging"], pet: true, units: 180, built: 2010, mgmt: "Alhambra" },
+  { name: "Sterling 5th Street", address: "2100 5th St", lat: 38.5460, lng: -121.7260, area: "East", type: "Student", beds: "S-5", rentLow: 1169, rentHigh: 2839, amenities: ["Pool", "Fitness", "W/D In-Unit", "Furnished", "Study Lounge", "Bike Storage", "EV Charging", "Elevator", "Balcony", "Modern"], pet: true, units: 160, built: 2019, mgmt: "Sterling" },
   { name: "Seville at Mace Ranch", address: "1265 Valdora St", lat: 38.5440, lng: -121.7200, area: "East", type: "General", beds: "1-2", rentLow: 1900, rentHigh: 2700, amenities: ["Pool", "Fitness", "Laundry", "Parking", "Clubhouse"], pet: true, units: 120, built: 2000, mgmt: "Seville" },
   { name: "Ellington Apartments", address: "4211 Cowell Blvd", lat: 38.5305, lng: -121.7160, area: "East", type: "General", beds: "1-4", rentLow: 2100, rentHigh: 3500, amenities: ["Pool", "Fitness", "W/D In-Unit", "Dog Park", "EV Charging", "Clubhouse"], pet: true, units: 200, built: 2018, mgmt: "Ellington" },
 
