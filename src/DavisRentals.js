@@ -19,7 +19,7 @@ async function fetchAdsData() {
 
 async function saveAdsData(banners, promoted) {
   try {
-    if (SHEETS_API_URL === "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE") return false;
+    if (SHEETS_API_URL === "https://script.google.com/macros/s/AKfycbz_cC3rVBDL6Ie2wAAe3Vj1l8jyG7R-u0-yAjUmDq-OFuHCduLQUmGf8p-fRxXSB-sL/exec") return false;
     const res = await fetch(SHEETS_API_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain" },
