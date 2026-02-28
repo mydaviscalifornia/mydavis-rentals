@@ -404,12 +404,6 @@ export default function DavisRentals() {
               <span style={{ transition: "transform 0.4s cubic-bezier(0.22,1,0.36,1), opacity 0.3s", transform: isDark ? "rotate(0deg) scale(1)" : "rotate(90deg) scale(0)", opacity: isDark ? 1 : 0, position: "absolute" }}>{"\u2600\uFE0F"}</span>
               <span style={{ transition: "transform 0.4s cubic-bezier(0.22,1,0.36,1), opacity 0.3s", transform: isDark ? "rotate(-90deg) scale(0)" : "rotate(0deg) scale(1)", opacity: isDark ? 0 : 1, position: "absolute" }}>{"\uD83C\uDF19"}</span>
             </button>
-            <button onClick={() => { setShowAdmin(!showAdmin); if (!showAdmin && !adminAuth) { setAdminPass(""); setAdminError(""); } }} title="Admin" style={{
-              width: 38, height: 38, borderRadius: 10, border: `1px solid ${t.border}`,
-              background: showAdmin ? t.accentBg : t.bgInput, display: "flex", alignItems: "center", justifyContent: "center",
-              cursor: "pointer", fontSize: 16, transition: "all 0.3s ease", color: showAdmin ? t.accent : t.textDim,
-            }}>{"\u2699\uFE0F"}</button>
-            <a href="https://mydaviscalifornia.com" style={{ fontSize: 12, color: t.textMuted, textDecoration: "none", padding: "8px 14px", borderRadius: 8, border: `1px solid ${t.border}`, background: t.bgInput }}>{"\u2190"} Back to MDC</a>
           </div>
         </div>
       </div>
@@ -874,6 +868,14 @@ export default function DavisRentals() {
           {"\u00A9"} 2026 mydaviscalifornia.com {"\u00B7"} Rental data is approximate and updated periodically. Contact each community directly for current pricing and availability.
           <br />Walk scores are calculated based on straight-line distance to UC Davis (420 Hutchison Dr) and Downtown Davis (730 3rd St).
         </div>
+        <button onClick={() => { setShowAdmin(!showAdmin); if (!showAdmin && !adminAuth) { setAdminPass(""); setAdminError(""); } }} title="Admin" style={{
+          marginTop: 12, width: 34, height: 34, borderRadius: 8, border: `1px solid ${t.borderLight}`,
+          background: showAdmin ? t.accentBg : "transparent", display: "inline-flex", alignItems: "center", justifyContent: "center",
+          cursor: "pointer", fontSize: 14, transition: "all 0.3s ease", color: showAdmin ? t.accent : t.footerText, opacity: 0.6,
+        }}
+          onMouseEnter={e => e.currentTarget.style.opacity = "1"}
+          onMouseLeave={e => e.currentTarget.style.opacity = "0.6"}
+        >{"\u2699\uFE0F"}</button>
       </div>
     </div>
   );
