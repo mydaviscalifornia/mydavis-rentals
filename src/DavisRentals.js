@@ -251,6 +251,45 @@ export default function DavisRentals() {
   const typeColors = { General: "#6366f1", Student: "#f59e0b", Senior: "#10b981", Affordable: "#ec4899" };
   const areaEmoji = { Campus: "\uD83C\uDF93", Downtown: "\uD83C\uDFD9\uFE0F", Central: "\uD83C\uDFE0", North: "\u2B06\uFE0F", South: "\u2B07\uFE0F", East: "\u27A1\uFE0F", West: "\u2B05\uFE0F" };
 
+  const PROMOTED = [
+    {
+      name: "The Edge Apartments",
+      tagline: "South Davis Living Redefined",
+      promo: "1 Month Free on Select 2BR Units",
+      address: "4255 Cowell Blvd, South Davis",
+      beds: "1-3 Bed",
+      rent: "From $1,800/mo",
+      highlights: ["Pool & Fitness", "Pet Friendly", "Clubhouse"],
+      link: "tel:+15307569090",
+      cta: "Call for Move-In Special",
+      color: "#6366f1",
+    },
+    {
+      name: "Renaissance Park",
+      tagline: "Modern Living in South Davis",
+      promo: "Now Leasing \u2014 EV Charging Available",
+      address: "3000 Lillard Dr, South Davis",
+      beds: "1-3 Bed",
+      rent: "From $1,867/mo",
+      highlights: ["W/D In-Unit", "Dog Park", "EV Charging"],
+      link: "tel:+15307571221",
+      cta: "Schedule a Tour",
+      color: "#10b981",
+    },
+    {
+      name: "Identity Davis",
+      tagline: "Purpose-Built Student Living",
+      promo: "Fall 2026 Pre-Leasing Open \u2014 $200 Off",
+      address: "525 Oxford Cir, Central Davis",
+      beds: "3-5 Bed",
+      rent: "From $1,019/bed",
+      highlights: ["Furnished", "Shuttle to UCD", "Study Lounge"],
+      link: "tel:+15302970222",
+      cta: "Reserve Your Room",
+      color: "#f59e0b",
+    },
+  ];
+
   return (
     <div style={{ minHeight: "100vh", background: t.bg, color: t.text, fontFamily: "'DM Sans', -apple-system, sans-serif", transition: "background 0.3s, color 0.3s" }}>
       <style>{`
@@ -262,11 +301,11 @@ export default function DavisRentals() {
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
         .apt-row { transition: all 0.2s ease; cursor: pointer; }
         .apt-row:hover { background: ${t.rowHover} !important; }
-        .chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; border: 1px solid ${t.chipBorder}; cursor: pointer; transition: all 0.15s; user-select: none; }
+        .chip { display: inline-flex; align-items: center; gap: 4px; padding: 5px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; border: 1px solid ${t.chipBorder}; cursor: pointer; transition: all 0.15s; user-select: none; }
         .chip:hover { border-color: ${t.chipHover}; }
         .chip.active { background: ${t.accentBg}; border-color: ${t.accent}; color: ${t.accentLight}; }
-        .score-pill { display: inline-flex; align-items: center; justify-content: center; min-width: 36px; padding: 2px 8px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; }
-        .filter-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: ${t.textDim}; font-weight: 600; margin-bottom: 6px; }
+        .score-pill { display: inline-flex; align-items: center; justify-content: center; min-width: 38px; padding: 3px 9px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; }
+        .filter-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: ${t.textDim}; font-weight: 600; margin-bottom: 6px; }
         input[type=range] { -webkit-appearance: none; width: 100%; height: 4px; border-radius: 2px; background: ${t.rangeBg}; outline: none; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: ${t.accent}; cursor: pointer; }
         .compare-bar { position: fixed; bottom: 0; left: 0; right: 0; background: ${t.headerBg}; backdrop-filter: blur(20px); border-top: 1px solid ${t.border}; padding: 12px 24px; z-index: 100; animation: fadeIn 0.3s; display: flex; align-items: center; justify-content: space-between; }
@@ -303,19 +342,67 @@ export default function DavisRentals() {
 
       {/* HERO */}
       <div style={{ maxWidth: 1400, margin: "0 auto", padding: "48px 24px 32px" }}>
-        <div style={{ fontSize: 10, fontWeight: 700, color: t.accent, textTransform: "uppercase", letterSpacing: 3, marginBottom: 12 }}>Davis, California</div>
-        <h1 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 42, color: t.textStrong, margin: "0 0 8px", lineHeight: 1.1 }}>Every Apartment.<br />One Page.</h1>
-        <p style={{ fontSize: 15, color: t.textMuted, maxWidth: 520, lineHeight: 1.6, margin: "0 0 24px" }}>Compare {APARTMENTS.length} apartment communities across Davis. Filter by price, amenities, and proximity to UC Davis or Downtown.</p>
+        <div style={{ fontSize: 11, fontWeight: 700, color: t.accent, textTransform: "uppercase", letterSpacing: 3, marginBottom: 12 }}>Davis, California</div>
+        <h1 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 44, color: t.textStrong, margin: "0 0 10px", lineHeight: 1.1 }}>Every Apartment.<br />One Page.</h1>
+        <p style={{ fontSize: 16, color: t.textMuted, maxWidth: 520, lineHeight: 1.6, margin: "0 0 24px" }}>Compare {APARTMENTS.length} apartment communities across Davis. Filter by price, amenities, and proximity to UC Davis or Downtown.</p>
 
         {/* Reference Point Legend */}
         <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 24 }}>
           {REFERENCE_POINTS.map(ref => (
             <div key={ref.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 10, background: t.bgInput, border: `1px solid ${t.border}` }}>
-              <span style={{ fontSize: 18 }}>{ref.emoji}</span>
+              <span style={{ fontSize: 20 }}>{ref.emoji}</span>
               <div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: t.text }}>Walk Score: {ref.label}</div>
-                <div style={{ fontSize: 10, color: t.textDim }}>{ref.address}</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: t.text }}>Walk Score: {ref.label}</div>
+                <div style={{ fontSize: 11, color: t.textDim }}>{ref.address}</div>
               </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* PROMOTED LISTINGS */}
+      <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 24px 32px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: t.badgeText, textTransform: "uppercase", letterSpacing: 2 }}>Featured Communities</div>
+          <div style={{ padding: "2px 8px", borderRadius: 4, background: t.badgeBg, border: `1px solid ${t.badgeBorder}`, fontSize: 9, fontWeight: 700, color: t.badgeText, textTransform: "uppercase", letterSpacing: 1 }}>Sponsored</div>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 16 }}>
+          {PROMOTED.map((p, i) => (
+            <div key={i} style={{
+              borderRadius: 16, padding: 24, position: "relative", overflow: "hidden",
+              background: isDark ? `linear-gradient(145deg, ${p.color}12, ${p.color}06)` : `linear-gradient(145deg, ${p.color}08, ${p.color}03)`,
+              border: `1px solid ${isDark ? `${p.color}30` : `${p.color}20`}`,
+              transition: "transform 0.2s, box-shadow 0.2s",
+            }}
+              onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = `0 8px 32px ${p.color}15`; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
+                <div>
+                  <div style={{ fontSize: 18, fontWeight: 700, color: t.textStrong, fontFamily: "'DM Serif Display', serif" }}>{p.name}</div>
+                  <div style={{ fontSize: 12, color: t.textMuted, marginTop: 2 }}>{p.address}</div>
+                </div>
+                <div style={{ padding: "4px 10px", borderRadius: 8, background: `${p.color}18`, fontSize: 12, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", color: p.color, whiteSpace: "nowrap" }}>{p.rent}</div>
+              </div>
+              <div style={{ padding: "8px 12px", borderRadius: 8, background: `${p.color}10`, border: `1px solid ${p.color}20`, marginBottom: 14 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: p.color }}>{"\u2728"} {p.promo}</div>
+              </div>
+              <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 16 }}>
+                <span style={{ fontSize: 12, color: t.textMuted, fontWeight: 600 }}>{p.beds}</span>
+                <span style={{ color: t.textFaint }}>{"\u00B7"}</span>
+                {p.highlights.map((h, j) => (
+                  <span key={j} style={{ fontSize: 12, color: t.textMuted }}>{h}{j < p.highlights.length - 1 ? <span style={{ color: t.textFaint }}>{" \u00B7 "}</span> : ""}</span>
+                ))}
+              </div>
+              <a href={p.link} style={{
+                display: "block", textAlign: "center", padding: "10px 0", borderRadius: 10,
+                background: `linear-gradient(135deg, ${p.color}, ${p.color}cc)`,
+                color: "#fff", fontSize: 13, fontWeight: 700, textDecoration: "none",
+                letterSpacing: 0.3, transition: "opacity 0.2s",
+              }}
+                onMouseEnter={e => e.currentTarget.style.opacity = "0.9"}
+                onMouseLeave={e => e.currentTarget.style.opacity = "1"}
+              >{p.cta} {"\u2192"}</a>
             </div>
           ))}
         </div>
@@ -327,7 +414,7 @@ export default function DavisRentals() {
           {/* Search */}
           <div style={{ flex: "1 1 220px" }}>
             <div className="filter-label">Search</div>
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Name, address, area..." style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: `1px solid ${t.borderInput}`, background: t.bgInput, color: t.text, fontSize: 13, outline: "none" }} />
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Name, address, area..." style={{ width: "100%", padding: "10px 14px", borderRadius: 8, border: `1px solid ${t.borderInput}`, background: t.bgInput, color: t.text, fontSize: 14, outline: "none" }} />
           </div>
           {/* Area */}
           <div>
@@ -362,51 +449,51 @@ export default function DavisRentals() {
           </div>
         </div>
 
-        <div style={{ marginTop: 16, fontSize: 12, color: t.textFaint }}>{filtered.length} of {APARTMENTS.length} apartments shown</div>
+        <div style={{ marginTop: 16, fontSize: 13, color: t.textFaint }}>{filtered.length} of {APARTMENTS.length} apartments shown</div>
       </div>
 
       {/* TABLE */}
       <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 24px 120px", overflowX: "auto" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
           <thead>
             <tr style={{ borderBottom: `1px solid ${t.border}` }}>
-              <th style={{ padding: "10px 8px", textAlign: "left", color: t.textDim, fontSize: 10, textTransform: "uppercase", letterSpacing: 1.2, fontWeight: 600, width: 30 }}></th>
-              <th style={{ padding: "10px 8px", textAlign: "left", color: t.textDim, fontSize: 10, textTransform: "uppercase", letterSpacing: 1.2, fontWeight: 600 }}>Community</th>
-              <th style={{ padding: "10px 8px", textAlign: "left", color: t.textDim, fontSize: 10, textTransform: "uppercase", letterSpacing: 1.2, fontWeight: 600 }}>Type</th>
-              <th style={{ padding: "10px 8px", textAlign: "left", color: t.textDim, fontSize: 10, textTransform: "uppercase", letterSpacing: 1.2, fontWeight: 600 }}>Beds</th>
+              <th style={{ padding: "12px 8px", textAlign: "left", color: t.textDim, fontSize: 11, textTransform: "uppercase", letterSpacing: 1.2, fontWeight: 600, width: 30 }}></th>
+              <th style={{ padding: "12px 8px", textAlign: "left", color: t.textDim, fontSize: 11, textTransform: "uppercase", letterSpacing: 1.2, fontWeight: 600 }}>Community</th>
+              <th style={{ padding: "12px 8px", textAlign: "left", color: t.textDim, fontSize: 11, textTransform: "uppercase", letterSpacing: 1.2, fontWeight: 600 }}>Type</th>
+              <th style={{ padding: "12px 8px", textAlign: "left", color: t.textDim, fontSize: 11, textTransform: "uppercase", letterSpacing: 1.2, fontWeight: 600 }}>Beds</th>
               {[{ col: "rentLow", label: "Rent From" }, { col: "rentHigh", label: "Rent To" }].map(h => (
-                <th key={h.col} onClick={() => toggleSort(h.col)} style={{ padding: "10px 8px", textAlign: "right", color: sortBy === h.col ? t.accentLight : t.textDim, fontSize: 10, textTransform: "uppercase", letterSpacing: 1.2, fontWeight: 600, cursor: "pointer", userSelect: "none" }}>{h.label} {sortBy === h.col ? (sortDir === "desc" ? "\u25BC" : "\u25B2") : ""}</th>
+                <th key={h.col} onClick={() => toggleSort(h.col)} style={{ padding: "12px 8px", textAlign: "right", color: sortBy === h.col ? t.accentLight : t.textDim, fontSize: 11, textTransform: "uppercase", letterSpacing: 1.2, fontWeight: 600, cursor: "pointer", userSelect: "none" }}>{h.label} {sortBy === h.col ? (sortDir === "desc" ? "\u25BC" : "\u25B2") : ""}</th>
               ))}
               {REFERENCE_POINTS.map(ref => (
-                <th key={ref.id} onClick={() => toggleSort("avgScore")} style={{ padding: "10px 8px", textAlign: "center", color: sortBy === "avgScore" ? t.accentLight : t.textDim, fontSize: 10, textTransform: "uppercase", letterSpacing: 1.2, fontWeight: 600, cursor: "pointer", userSelect: "none" }}>{ref.emoji} {ref.shortLabel}</th>
+                <th key={ref.id} onClick={() => toggleSort("avgScore")} style={{ padding: "12px 8px", textAlign: "center", color: sortBy === "avgScore" ? t.accentLight : t.textDim, fontSize: 11, textTransform: "uppercase", letterSpacing: 1.2, fontWeight: 600, cursor: "pointer", userSelect: "none" }}>{ref.emoji} {ref.shortLabel}</th>
               ))}
-              <th onClick={() => toggleSort("amenityCount")} style={{ padding: "10px 8px", textAlign: "center", color: sortBy === "amenityCount" ? t.accentLight : t.textDim, fontSize: 10, textTransform: "uppercase", letterSpacing: 1.2, fontWeight: 600, cursor: "pointer", userSelect: "none" }}>Amenities {sortBy === "amenityCount" ? (sortDir === "desc" ? "\u25BC" : "\u25B2") : ""}</th>
-              <th style={{ padding: "10px 8px", textAlign: "center", color: t.textDim, fontSize: 10, textTransform: "uppercase", letterSpacing: 1.2, fontWeight: 600 }}>{"\uD83D\uDC3E"}</th>
+              <th onClick={() => toggleSort("amenityCount")} style={{ padding: "12px 8px", textAlign: "center", color: sortBy === "amenityCount" ? t.accentLight : t.textDim, fontSize: 11, textTransform: "uppercase", letterSpacing: 1.2, fontWeight: 600, cursor: "pointer", userSelect: "none" }}>Amenities {sortBy === "amenityCount" ? (sortDir === "desc" ? "\u25BC" : "\u25B2") : ""}</th>
+              <th style={{ padding: "12px 8px", textAlign: "center", color: t.textDim, fontSize: 11, textTransform: "uppercase", letterSpacing: 1.2, fontWeight: 600 }}>{"\uD83D\uDC36"}</th>
             </tr>
           </thead>
           <tbody>
             {filtered.map((apt, i) => (
               <tr key={apt.name} className="apt-row" onClick={() => setSelectedApt(apt)} style={{ borderBottom: `1px solid ${t.borderLight}`, animation: `fadeIn ${0.15 + i * 0.02}s ease` }}>
-                <td style={{ padding: "10px 8px" }}>
+                <td style={{ padding: "12px 8px" }}>
                   <input type="checkbox" checked={compareList.some(a => a.name === apt.name)} onChange={e => { e.stopPropagation(); toggleCompare(apt); }} onClick={e => e.stopPropagation()} style={{ accentColor: t.accent }} />
                 </td>
-                <td style={{ padding: "10px 8px" }}>
-                  <div style={{ fontWeight: 600, color: t.text }}>{apt.name}</div>
-                  <div style={{ fontSize: 11, color: t.textFaint }}>{apt.address} {"\u00B7"} {areaEmoji[apt.area]} {apt.area}</div>
+                <td style={{ padding: "12px 8px" }}>
+                  <div style={{ fontWeight: 600, fontSize: 14, color: t.text }}>{apt.name}</div>
+                  <div style={{ fontSize: 12, color: t.textFaint }}>{apt.address} {"\u00B7"} {areaEmoji[apt.area]} {apt.area}</div>
                 </td>
-                <td style={{ padding: "10px 8px" }}>
-                  <span style={{ display: "inline-block", padding: "2px 8px", borderRadius: 4, fontSize: 10, fontWeight: 700, background: `${typeColors[apt.type]}18`, color: typeColors[apt.type], textTransform: "uppercase", letterSpacing: 0.5 }}>{apt.type}</span>
+                <td style={{ padding: "12px 8px" }}>
+                  <span style={{ display: "inline-block", padding: "3px 9px", borderRadius: 4, fontSize: 11, fontWeight: 700, background: `${typeColors[apt.type]}18`, color: typeColors[apt.type], textTransform: "uppercase", letterSpacing: 0.5 }}>{apt.type}</span>
                 </td>
-                <td style={{ padding: "10px 8px", fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: t.textMuted }}>{apt.beds}</td>
-                <td style={{ padding: "10px 8px", textAlign: "right", fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: t.text }}>${apt.rentLow.toLocaleString()}</td>
-                <td style={{ padding: "10px 8px", textAlign: "right", fontFamily: "'JetBrains Mono', monospace", color: t.textMuted }}>${apt.rentHigh.toLocaleString()}</td>
+                <td style={{ padding: "12px 8px", fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: t.textMuted }}>{apt.beds}</td>
+                <td style={{ padding: "12px 8px", textAlign: "right", fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: 14, color: t.text }}>${apt.rentLow.toLocaleString()}</td>
+                <td style={{ padding: "12px 8px", textAlign: "right", fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: t.textMuted }}>${apt.rentHigh.toLocaleString()}</td>
                 {apt.scores.map(s => (
-                  <td key={s.id} style={{ padding: "10px 8px", textAlign: "center" }}>
+                  <td key={s.id} style={{ padding: "12px 8px", textAlign: "center" }}>
                     <span className="score-pill" style={{ background: `${walkColor(s.score)}18`, color: walkColor(s.score) }}>{s.score}</span>
                   </td>
                 ))}
-                <td style={{ padding: "10px 8px", textAlign: "center", fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: t.textMuted }}>{apt.amenityCount}</td>
-                <td style={{ padding: "10px 8px", textAlign: "center", fontSize: 14 }}>{apt.pet ? "\u2705" : "\u274C"}</td>
+                <td style={{ padding: "12px 8px", textAlign: "center", fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: t.textMuted }}>{apt.amenityCount}</td>
+                <td style={{ padding: "12px 8px", textAlign: "center", fontSize: 16 }}>{apt.pet ? "\u2705" : "\u274C"}</td>
               </tr>
             ))}
           </tbody>
@@ -548,8 +635,8 @@ export default function DavisRentals() {
       )}
 
       {/* FOOTER */}
-      <div style={{ borderTop: `1px solid ${t.borderLight}`, padding: "20px 24px", textAlign: "center" }}>
-        <div style={{ fontSize: 11, color: t.footerText, lineHeight: 1.6 }}>
+      <div style={{ borderTop: `1px solid ${t.borderLight}`, padding: "24px 24px", textAlign: "center" }}>
+        <div style={{ fontSize: 12, color: t.footerText, lineHeight: 1.6 }}>
           {"\u00A9"} 2026 mydaviscalifornia.com {"\u00B7"} Rental data is approximate and updated periodically. Contact each community directly for current pricing and availability.
           <br />Walk scores are calculated based on straight-line distance to UC Davis (420 Hutchison Dr) and Downtown Davis (730 3rd St).
         </div>
