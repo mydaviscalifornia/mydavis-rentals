@@ -520,7 +520,7 @@ export default function DavisRentals() {
       <div style={{ borderBottom: `1px solid ${t.border}`, padding: "14px 24px", background: t.headerBg, backdropFilter: "blur(20px)" }}>
         <div style={{ maxWidth: 1400, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-            <a href="https://mydaviscalifornia.com" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
+            <a href="" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
               <div style={{ width: 34, height: 34, borderRadius: 8, background: "linear-gradient(135deg, #7B2D8E, #E84393)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Serif Display', serif", fontWeight: 700, fontSize: 10, color: t.textStrong }}>MDC</div>
               <div>
                 <div style={{ fontSize: 13, fontWeight: 700, color: t.text }}>mydaviscalifornia</div>
