@@ -528,7 +528,7 @@ export default function DavisRentals() {
               </div>
             </a>
             <div style={{ padding: "4px 14px", borderRadius: 20, background: t.badgeBg, border: `1px solid ${t.badgeBorder}`, fontSize: 10, fontWeight: 700, color: t.badgeText, textTransform: "uppercase", letterSpacing: 1.5 }}>
-              MDC Insider
+              MDC Insider * Preview
             </div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
