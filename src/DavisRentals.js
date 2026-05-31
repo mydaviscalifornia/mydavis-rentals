@@ -208,16 +208,16 @@ const THEMES = {
     footerText: "#444",
   },
   light: {
-    bg: "#f5f5f0", bgCard: "#ffffff", bgInput: "rgba(0,0,0,0.04)", bgHover: "rgba(0,0,0,0.03)",
-    border: "rgba(0,0,0,0.08)", borderLight: "rgba(0,0,0,0.05)", borderInput: "rgba(0,0,0,0.12)",
-    text: "#1a1a2e", textStrong: "#000", textMuted: "#666", textDim: "#888", textFaint: "#aaa", textGhost: "#ccc",
-    accent: "#4f46e5", accentLight: "#6366f1", accentBg: "rgba(79,70,229,0.1)",
-    headerBg: "rgba(245,245,240,0.95)", badgeBg: "rgba(180,140,40,0.08)", badgeBorder: "rgba(180,140,40,0.25)", badgeText: "#8a6d1b",
-    scrollThumb: "rgba(0,0,0,0.12)", chipBorder: "rgba(0,0,0,0.1)", chipHover: "rgba(0,0,0,0.2)",
-    modalBg: "rgba(255,255,255,0.8)", modalCard: "#ffffff", overlayBg: "rgba(255,255,255,0.85)",
-    rangeBg: "rgba(0,0,0,0.1)", rowHover: "rgba(0,0,0,0.03)",
+    bg: "#f4f0e8", bgCard: "#fdfbf6", bgInput: "rgba(59,44,34,0.04)", bgHover: "rgba(59,44,34,0.03)",
+    border: "#e0d8cb", borderLight: "#ece5d8", borderInput: "rgba(59,44,34,0.14)",
+    text: "#3b2c22", textStrong: "#3b2c22", textMuted: "#6a5848", textDim: "#a08a72", textFaint: "#b7a48d", textGhost: "#d9cdb8",
+    accent: "#e8634a", accentLight: "#c44a33", accentBg: "rgba(232,99,74,0.12)",
+    headerBg: "rgba(244,240,232,0.95)", badgeBg: "rgba(0,142,151,0.10)", badgeBorder: "rgba(0,142,151,0.25)", badgeText: "#007a82",
+    scrollThumb: "rgba(59,44,34,0.18)", chipBorder: "rgba(59,44,34,0.10)", chipHover: "rgba(59,44,34,0.28)",
+    modalBg: "rgba(244,240,232,0.82)", modalCard: "#fdfbf6", overlayBg: "rgba(244,240,232,0.85)",
+    rangeBg: "rgba(59,44,34,0.12)", rowHover: "rgba(232,99,74,0.04)",
     scorePillBg: (c) => `${c}15`,
-    footerText: "#999",
+    footerText: "#a08a72",
   },
 };
 
@@ -298,7 +298,7 @@ export default function DavisRentals() {
   const [showCompare, setShowCompare] = useState(false);
   const [isDark, setIsDark] = useState(() => {
     try { const s = window.localStorage?.getItem?.("mdc-theme"); if (s) return s === "dark"; } catch(e) {}
-    return true;
+    return false;
   });
 
   // Admin state
@@ -496,9 +496,9 @@ export default function DavisRentals() {
   const removeHighlight = (i) => setEditForm(prev => ({ ...prev, highlights: prev.highlights.filter((_, j) => j !== i) }));
 
   return (
-    <div style={{ minHeight: "100vh", background: t.bg, color: t.text, fontFamily: "'DM Sans', -apple-system, sans-serif", transition: "background 0.3s, color 0.3s" }}>
+    <div style={{ minHeight: "100vh", background: t.bg, color: t.text, fontFamily: "'Libre Franklin', -apple-system, sans-serif", transition: "background 0.3s, color 0.3s" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&family=JetBrains+Mono:wght@400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700;900&family=Libre+Franklin:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
         * { box-sizing: border-box; margin: 0; }
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-thumb { background: ${t.scrollThumb}; border-radius: 4px; }
@@ -521,7 +521,7 @@ export default function DavisRentals() {
         <div style={{ maxWidth: 1400, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
             <a href="" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-              <div style={{ width: 34, height: 34, borderRadius: 8, background: "linear-gradient(135deg, #7B2D8E, #E84393)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Serif Display', serif", fontWeight: 700, fontSize: 10, color: t.textStrong }}>MDC</div>
+              <div style={{ width: 34, height: 34, borderRadius: 8, background: "linear-gradient(135deg, #008e97, #e8634a)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: 10, color: t.textStrong }}>MDC</div>
               <div>
                 <div style={{ fontSize: 13, fontWeight: 700, color: t.text }}>mydaviscalifornia</div>
                 <div style={{ fontSize: 9, color: t.textDim, textTransform: "uppercase", letterSpacing: 1.5 }}>Rental Market Guide</div>
@@ -547,7 +547,7 @@ export default function DavisRentals() {
       {/* HERO */}
       <div style={{ maxWidth: 1400, margin: "0 auto", padding: "48px 24px 32px" }}>
         <div style={{ fontSize: 11, fontWeight: 700, color: t.accent, textTransform: "uppercase", letterSpacing: 3, marginBottom: 12 }}>Davis, California</div>
-        <h1 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 44, color: t.textStrong, margin: "0 0 10px", lineHeight: 1.1 }}>Every Apartment.<br />One Page.</h1>
+        <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 44, color: t.textStrong, margin: "0 0 10px", lineHeight: 1.1 }}>Every Apartment.<br />One Page.</h1>
         <p style={{ fontSize: 16, color: t.textMuted, maxWidth: 520, lineHeight: 1.6, margin: "0 0 24px" }}>Compare {APARTMENTS.length} apartment communities across Davis. Filter by price, amenities, and proximity to UC Davis or Downtown.</p>
 
         {/* Reference Point Legend */}
@@ -614,7 +614,7 @@ export default function DavisRentals() {
             >
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
                 <div>
-                  <div style={{ fontSize: 18, fontWeight: 700, color: t.textStrong, fontFamily: "'DM Serif Display', serif" }}>{p.name}</div>
+                  <div style={{ fontSize: 18, fontWeight: 700, color: t.textStrong, fontFamily: "'Playfair Display', serif" }}>{p.name}</div>
                   <div style={{ fontSize: 12, color: t.textMuted, marginTop: 2 }}>{p.address}</div>
                 </div>
                 <div style={{ padding: "4px 10px", borderRadius: 8, background: `${p.color}18`, fontSize: 12, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", color: p.color, whiteSpace: "nowrap" }}>{p.rent}</div>
@@ -764,7 +764,7 @@ export default function DavisRentals() {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
               <div>
                 <span style={{ display: "inline-block", padding: "2px 8px", borderRadius: 4, fontSize: 10, fontWeight: 700, background: `${typeColors[selectedApt.type]}18`, color: typeColors[selectedApt.type], textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>{selectedApt.type}</span>
-                <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 26, color: t.textStrong, margin: 0 }}>{selectedApt.name}</h2>
+                <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 26, color: t.textStrong, margin: 0 }}>{selectedApt.name}</h2>
                 <div style={{ fontSize: 13, color: t.textMuted, marginTop: 4 }}>{selectedApt.address}, Davis, CA {"\u00B7"} {areaEmoji[selectedApt.area]} {selectedApt.area} Davis</div>
               </div>
               <button onClick={() => setSelectedApt(null)} style={{ width: 32, height: 32, borderRadius: 8, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: t.textMuted, fontSize: 16, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>{"\u2715"}</button>
@@ -823,7 +823,7 @@ export default function DavisRentals() {
         <div onClick={() => setShowCompare(false)} style={{ position: "fixed", inset: 0, background: t.modalBg, backdropFilter: "blur(12px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 200, animation: "fadeIn 0.2s" }}>
           <div onClick={e => e.stopPropagation()} style={{ background: t.bgCard, borderRadius: 20, padding: 32, maxWidth: 900, width: "96%", border: `1px solid ${t.border}`, maxHeight: "85vh", overflowY: "auto" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-              <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, color: t.textStrong, margin: 0 }}>Side-by-Side Comparison</h2>
+              <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, color: t.textStrong, margin: 0 }}>Side-by-Side Comparison</h2>
               <button onClick={() => setShowCompare(false)} style={{ width: 32, height: 32, borderRadius: 8, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: t.textMuted, fontSize: 16, cursor: "pointer" }}>{"\u2715"}</button>
             </div>
             <div style={{ overflowX: "auto" }}>
@@ -877,7 +877,7 @@ export default function DavisRentals() {
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <span style={{ fontSize: 20 }}>{"\u2699\uFE0F"}</span>
                 <div>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: t.textStrong, fontFamily: "'DM Serif Display', serif" }}>Ad Manager</div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: t.textStrong, fontFamily: "'Playfair Display', serif" }}>Ad Manager</div>
                   <div style={{ fontSize: 12, color: t.textMuted }}>Manage banners & featured listings {saving ? <span style={{ color: t.accent }}>{"\u2022"} Saving...</span> : lastSaved ? <span style={{ color: "#10b981" }}>{"\u2713"} Synced</span> : SHEETS_API_URL === "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE" ? <span style={{ color: "#f59e0b" }}>{"\u26A0"} Local only — connect Google Sheets for cross-device sync</span> : null}</div>
                 </div>
               </div>
@@ -1083,7 +1083,7 @@ export default function DavisRentals() {
                             }}>
                               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
                                 <div>
-                                  <div style={{ fontSize: 16, fontWeight: 700, color: t.textStrong, fontFamily: "'DM Serif Display', serif" }}>{editForm.name || "Community Name"}</div>
+                                  <div style={{ fontSize: 16, fontWeight: 700, color: t.textStrong, fontFamily: "'Playfair Display', serif" }}>{editForm.name || "Community Name"}</div>
                                   <div style={{ fontSize: 11, color: t.textMuted, marginTop: 2 }}>{editForm.address || "Address"}</div>
                                 </div>
                                 <div style={{ padding: "3px 8px", borderRadius: 6, background: `${editForm.color}18`, fontSize: 11, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", color: editForm.color }}>{editForm.rent || "$0/mo"}</div>
