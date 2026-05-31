@@ -362,6 +362,39 @@ export default function DavisRentals() {
     try { window.localStorage?.setItem?.("mdc-theme", isDark ? "dark" : "light"); } catch(e) {}
   }, [isDark]);
 
+  // Auto-resize: report content height to the embedding MyDavis page so the
+  // apartments iframe can size itself to fit (no clipping, no dead space).
+  // Cross-origin, so we post only to an explicit allow-list of parent origins.
+  useEffect(() => {
+    const PARENT_ORIGINS = [
+      "https://mydaviscalifornia.com",
+      "https://www.mydaviscalifornia.com",
+      "https://mydaviscalifornia-site.pages.dev",
+    ];
+    let last = 0;
+    const post = () => {
+      const h = Math.ceil(document.documentElement.scrollHeight);
+      if (h === last) return;
+      last = h;
+      PARENT_ORIGINS.forEach((o) => {
+        try { window.parent.postMessage({ type: "mdc-rentals-height", height: h }, o); } catch (e) {}
+      });
+    };
+    post();
+    let ro;
+    if (typeof ResizeObserver !== "undefined") { ro = new ResizeObserver(() => post()); ro.observe(document.body); }
+    window.addEventListener("resize", post);
+    window.addEventListener("load", post);
+    const t1 = setTimeout(post, 400);
+    const t2 = setTimeout(post, 1500);
+    return () => {
+      if (ro) ro.disconnect();
+      window.removeEventListener("resize", post);
+      window.removeEventListener("load", post);
+      clearTimeout(t1); clearTimeout(t2);
+    };
+  }, []);
+
   // Publish to Google Sheets backend
   const publishToBackend = useCallback(async (newBanners, newPromoted) => {
     setSaving(true);
